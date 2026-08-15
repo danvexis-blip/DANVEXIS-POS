@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DANVEXIS Admin — Stock Manager</title>
+<title>DANVEXIS Admin + POS V5</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#080808;color:#fff}header{padding:18px 20px;border-bottom:1px solid #292929;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#080808;z-index:10}.brand{font-weight:900;letter-spacing:5px}.red{color:#d7192d}.wrap{max-width:1150px;margin:auto;padding:20px}.card{background:#111;border:1px solid #292929;border-radius:16px;padding:18px;margin-bottom:16px}input,select,textarea,button{width:100%;padding:13px;margin:7px 0;border-radius:9px;border:1px solid #333;background:#171717;color:#fff;font-size:15px}button{background:#d7192d;border:0;font-weight:800;cursor:pointer}.secondary{background:#242424}.danger{background:#6f111b}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.metric b{font-size:28px;display:block;margin-top:8px}.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.muted{color:#999;font-size:13px}.hidden{display:none}.product{padding:14px;border:1px solid #292929;border-radius:12px;margin:10px 0;background:#0d0d0d}.productMain{display:grid;grid-template-columns:76px 1fr auto;gap:13px;align-items:center}.product img{width:76px;height:90px;object-fit:cover;border-radius:10px;border:1px solid #333;background:#181818}.name{font-weight:900;font-size:17px}.sku{font-size:11px;letter-spacing:1.6px;color:#d7192d;margin-bottom:5px}.stockEditor{margin-top:14px;padding-top:14px;border-top:1px solid #242424}.stockRow{display:grid;grid-template-columns:80px 42px 1fr 42px 92px;gap:7px;align-items:center;margin:7px 0}.stockRow button{margin:0;padding:10px}.stockRow input{text-align:center;margin:0}.saveStock{background:#f2efe8;color:#080808}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{width:auto;margin:0}.ok{color:#72df8c}.error{color:#ff6b6b}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.toolbar button{width:auto}.order{padding:15px;border:1px solid #292929;border-radius:12px;margin:10px 0;background:#0d0d0d}@media(max-width:650px){.grid,.two{grid-template-columns:1fr}.row{align-items:flex-start;flex-direction:column}.productMain{grid-template-columns:70px 1fr}.productMain>.actions{grid-column:1/-1}.stockRow{grid-template-columns:56px 38px 1fr 38px}.stockRow .saveStock{grid-column:1/-1;width:100%}}
 
@@ -51,7 +51,7 @@ header{backdrop-filter:blur(16px);background:rgba(8,8,8,.9)}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, addDoc, deleteDoc, setDoc, serverTimestamp, query, orderBy, runTransaction } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, addDoc, deleteDoc, setDoc, serverTimestamp, query, orderBy, runTransaction, writeBatch } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 const firebaseConfig={apiKey:"AIzaSyB7VnK4N_Fo2JhCNcYL-UY9gyqhezXI0-8",authDomain:"danvexis-3a1e0.firebaseapp.com",projectId:"danvexis-3a1e0",storageBucket:"danvexis-3a1e0.firebasestorage.app",messagingSenderId:"1083975479921",appId:"1:1083975479921:web:3a67e7b171f2652def61d0",measurementId:"G-EWJPTVB38Y"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);let editingProductId=null,editingImageData="";
 const DROP01=[
@@ -97,7 +97,41 @@ function addPosItem(id,size){const p=posProductCache.find(x=>x.id===id);if(!p)re
 function posGrandTotal(){return posCart.reduce((a,x)=>a+x.price*x.qty,0)}
 function renderPosCart(){const box=$("posCart");box.innerHTML=posCart.length?posCart.map((x,i)=>`<div class="cartLine"><b>${safe(x.name)}</b><div class="muted">${safe(x.size)} · ${money(x.price)} each</div><div class="cartControls"><button class="secondary cartMinus" data-i="${i}">−</button><input value="${x.qty}" readonly><button class="secondary cartPlus" data-i="${i}">+</button><button class="danger cartRemove" data-i="${i}">REMOVE</button></div></div>`).join(''):'<p class="muted">Cart is empty.</p>';box.querySelectorAll('.cartMinus').forEach(b=>b.onclick=()=>{const x=posCart[+b.dataset.i];x.qty--;if(x.qty<=0)posCart.splice(+b.dataset.i,1);renderPosCart()});box.querySelectorAll('.cartPlus').forEach(b=>b.onclick=()=>{const x=posCart[+b.dataset.i];if(x.qty<x.available)x.qty++;else alert('No more stock available.');renderPosCart()});box.querySelectorAll('.cartRemove').forEach(b=>b.onclick=()=>{posCart.splice(+b.dataset.i,1);renderPosCart()});updatePosTotals()}
 function updatePosTotals(){const total=posGrandTotal(),received=Number($("posReceived").value||0),cash=$("posPayment").value==='Cash';$("posTotal").textContent=money(total);$("posReceived").disabled=!cash;$("posChange").textContent=money(cash?Math.max(0,received-total):0)}
-async function completePosSale(){const msg=$("posMsg"),total=posGrandTotal(),payment=$("posPayment").value,received=Number($("posReceived").value||0);if(!posCart.length){msg.innerHTML='<span class="error">Add at least one product.</span>';return}if(payment==='Cash'&&received<total){msg.innerHTML='<span class="error">Cash received is less than the total.</span>';return}const saleItems=posCart.map(x=>({...x})),orderRef=doc(collection(db,'orders'));try{msg.innerHTML='<span class="muted">Processing sale...</span>';await runTransaction(db,async tx=>{const checks=[];for(const x of saleItems){const ref=doc(db,'products',x.id),snap=await tx.get(ref);if(!snap.exists())throw new Error(x.name+' no longer exists.');const d=snap.data(),n=normalize(d),left=Number(n.stock[x.size]||0);if(left<x.qty)throw new Error('Not enough '+x.name+' '+x.size+' stock. Only '+left+' left.');checks.push({x,ref,n,left})}for(const c of checks){c.n.stock[c.x.size]=c.left-c.x.qty;const stockTotal=c.n.sizes.reduce((a,z)=>a+Number(c.n.stock[z]||0),0);tx.update(c.ref,{stock:c.n.stock,stockTotal,updatedAt:serverTimestamp()})}tx.set(orderRef,{source:'POS',status:'Delivered',customer:{name:$("posCustomer").value.trim()||'Walk-in Customer',phone:$("posPhone").value.trim()},items:saleItems.map(x=>({productId:x.id,sku:x.sku,name:x.name,size:x.size,qty:x.qty,price:x.price})),total,paymentMethod:payment,amountReceived:payment==='Cash'?received:total,change:payment==='Cash'?Math.max(0,received-total):0,createdAt:serverTimestamp(),updatedAt:serverTimestamp()})});msg.innerHTML='<span class="ok">SALE COMPLETE · '+safe(orderRef.id.slice(0,10))+' · '+money(total)+'</span>';posCart=[];$("posReceived").value='';$("posCustomer").value='';$("posPhone").value='';renderPosCart();await Promise.all([loadPosProducts(),loadProducts(),loadOrders()])}catch(e){msg.innerHTML='<span class="error">'+safe(e.message)+'</span>'}}
+async function completePosSale(){
+ const msg=$("posMsg"),btn=$("completeSale"),total=posGrandTotal(),payment=$("posPayment").value,received=Number($("posReceived").value||0);
+ if(!posCart.length){msg.innerHTML='<span class="error">Add at least one product.</span>';return}
+ if(payment==='Cash'&&received<total){msg.innerHTML='<span class="error">Cash received is less than the total.</span>';return}
+ const saleItems=posCart.map(x=>({...x})),orderRef=doc(collection(db,'orders'));
+ btn.disabled=true; msg.innerHTML='<span class="muted">Processing sale — do not close this page...</span>';
+ try{
+   // Re-read live stock immediately before committing the sale.
+   const checks=[];
+   for(const x of saleItems){
+     const ref=doc(db,'products',x.id),snap=await getDocs(query(collection(db,'products'))).then(all=>all.docs.find(d=>d.id===x.id));
+     if(!snap) throw new Error(x.name+' no longer exists.');
+     const n=normalize(snap.data()),left=Number(n.stock[x.size]||0);
+     if(left<x.qty) throw new Error('Not enough '+x.name+' '+x.size+' stock. Only '+left+' left.');
+     checks.push({x,ref,n,left});
+   }
+   // One atomic batch: order creation and every stock deduction succeed together.
+   const batch=writeBatch(db);
+   for(const c of checks){
+     c.n.stock[c.x.size]=c.left-c.x.qty;
+     const stockTotal=c.n.sizes.reduce((a,z)=>a+Number(c.n.stock[z]||0),0);
+     batch.update(c.ref,{stock:c.n.stock,stockTotal,updatedAt:serverTimestamp()});
+   }
+   batch.set(orderRef,{source:'POS',orderType:'In-store sale',status:'Delivered',customer:{name:$("posCustomer").value.trim()||'Walk-in Customer',phone:$("posPhone").value.trim()},items:saleItems.map(x=>({productId:x.id,sku:x.sku,name:x.name,size:x.size,qty:x.qty,price:x.price})),total,paymentMethod:payment,amountReceived:payment==='Cash'?received:total,change:payment==='Cash'?Math.max(0,received-total):0,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+   await batch.commit();
+   posCart=[];$("posReceived").value='';$("posCustomer").value='';$("posPhone").value='';renderPosCart();
+   await Promise.all([loadPosProducts(),loadProducts(),loadOrders()]);
+   msg.innerHTML='<span class="ok">✓ SALE SAVED TO FIREBASE · '+safe(orderRef.id.slice(0,10))+' · '+money(total)+'</span>';
+   alert('DANVEXIS POS\n\nSALE COMPLETE\n'+money(total)+'\nOrder: '+orderRef.id.slice(0,10));
+ }catch(e){
+   console.error('POS sale failed',e);
+   msg.innerHTML='<span class="error">SALE NOT SAVED: '+safe(e.code?e.code+' — '+e.message:e.message)+'</span>';
+   alert('SALE NOT SAVED\n\n'+(e.code?e.code+' — ':'')+e.message+'\n\nNo sale should be treated as complete until this error is fixed.');
+ }finally{btn.disabled=false}
+}
 
 </script>
 </body></html>
