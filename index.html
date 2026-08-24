@@ -1,0 +1,1210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080808"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="DANVEXIS POS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>DANVEXIS Admin + POS V7</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#080808;color:#fff}header{padding:18px 20px;border-bottom:1px solid #292929;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#080808;z-index:10}.brand{font-weight:900;letter-spacing:5px}.red{color:#d7192d}.wrap{max-width:1150px;margin:auto;padding:20px}.card{background:#111;border:1px solid #292929;border-radius:16px;padding:18px;margin-bottom:16px}input,select,textarea,button{width:100%;padding:13px;margin:7px 0;border-radius:9px;border:1px solid #333;background:#171717;color:#fff;font-size:15px}button{background:#d7192d;border:0;font-weight:800;cursor:pointer}.secondary{background:#242424}.danger{background:#6f111b}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.metric b{font-size:28px;display:block;margin-top:8px}.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.muted{color:#999;font-size:13px}.hidden{display:none}.product{padding:14px;border:1px solid #292929;border-radius:12px;margin:10px 0;background:#0d0d0d}.productMain{display:grid;grid-template-columns:76px 1fr auto;gap:13px;align-items:center}.product img{width:76px;height:90px;object-fit:cover;border-radius:10px;border:1px solid #333;background:#181818}.name{font-weight:900;font-size:17px}.sku{font-size:11px;letter-spacing:1.6px;color:#d7192d;margin-bottom:5px}.stockEditor{margin-top:14px;padding-top:14px;border-top:1px solid #242424}.stockRow{display:grid;grid-template-columns:80px 42px 1fr 42px 92px;gap:7px;align-items:center;margin:7px 0}.stockRow button{margin:0;padding:10px}.stockRow input{text-align:center;margin:0}.saveStock{background:#f2efe8;color:#080808}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{width:auto;margin:0}.ok{color:#72df8c}.error{color:#ff6b6b}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.toolbar button{width:auto}.order{padding:15px;border:1px solid #292929;border-radius:12px;margin:10px 0;background:#0d0d0d}@media(max-width:650px){.grid,.two{grid-template-columns:1fr}.row{align-items:flex-start;flex-direction:column}.productMain{grid-template-columns:70px 1fr}.productMain>.actions{grid-column:1/-1}.stockRow{grid-template-columns:56px 38px 1fr 38px}.stockRow .saveStock{grid-column:1/-1;width:100%}}
+
+/* DANVEXIS Admin V2 polish */
+:root{--bg:#070707;--panel:#101010;--line:#272727;--soft:#9a9a9a;--red:#d7192d;--green:#72df8c;--amber:#ffbf5b}
+body{background:radial-gradient(circle at 50% -10%,#171717 0,#080808 34%,#060606 100%);min-height:100vh}
+header{backdrop-filter:blur(16px);background:rgba(8,8,8,.9)}
+.wrap{padding-bottom:70px}.card{box-shadow:0 12px 40px rgba(0,0,0,.18)}
+.metric{min-height:110px}.metric b{font-size:clamp(24px,5vw,34px)}
+.product{overflow:hidden}.productMain{grid-template-columns:76px minmax(0,1fr) auto}.productMain>div:nth-child(2){min-width:0}.name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stockStatus{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.7px;margin-top:7px;border:1px solid #333}.stockStatus.in{color:var(--green);border-color:#214a2d;background:#0c1b10}.stockStatus.low{color:var(--amber);border-color:#55401d;background:#1f1708}.stockStatus.out{color:#ff7474;border-color:#5a2525;background:#210d0d}
+.stockEditor>.muted{font-weight:800;letter-spacing:1px}.stockRow{background:#121212;border:1px solid #232323;border-radius:10px;padding:7px}.stockRow button{min-height:42px}.stockRow input{min-width:0}
+.toolbar{justify-content:flex-end}.toolbar button{min-height:44px}.order select{margin-top:12px}
+@media(max-width:650px){header{padding:14px 16px}.brand{font-size:14px;letter-spacing:3.5px}.wrap{padding:14px}.card{padding:14px;border-radius:13px;margin-bottom:12px}.grid{grid-template-columns:repeat(3,1fr);gap:7px}.metric{min-height:82px;padding:12px 10px}.metric b{font-size:20px;margin-top:6px}.row{gap:10px}.card>.row{flex-direction:column}.toolbar{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:7px}.toolbar button{width:100%;font-size:12px;padding:11px 8px}.product{padding:11px}.productMain{grid-template-columns:62px minmax(0,1fr);gap:10px}.product img{width:62px;height:76px}.name{font-size:15px}.sku{font-size:10px}.productMain>.actions{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:7px}.actions button{width:100%;font-size:11px;padding:10px 7px}.stockEditor{margin-top:11px;padding-top:11px}.stockRow{grid-template-columns:40px 38px minmax(55px,1fr) 38px;gap:5px}.stockRow .saveStock{grid-column:1/-1}.grid .card{margin-bottom:0}.muted{font-size:12px}}
+@media(max-width:390px){.grid{grid-template-columns:1fr}.metric{min-height:auto}.toolbar{grid-template-columns:1fr}.productMain{grid-template-columns:56px minmax(0,1fr)}.product img{width:56px;height:70px}}
+
+.orderHead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}.orderActions{display:flex;gap:8px;margin-top:12px}.orderActions button{width:auto;margin:0}.orderEdit{margin-top:14px;padding-top:14px;border-top:1px solid #292929}.orderEdit label{display:block;color:#aaa;font-size:11px;font-weight:800;letter-spacing:.8px;margin-top:8px}.orderItemEdit{border:1px solid #292929;border-radius:10px;padding:10px;margin:8px 0;background:#111}.orderItemGrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:7px}.orderMsg{margin-top:8px}.orderSummary{margin-top:8px;line-height:1.6}.orderProduction{margin-top:12px;padding:12px;border:1px solid #292929;border-radius:10px;background:#111}.orderProductionGrid{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.orderProductionGrid button{width:auto;margin:0}@media(max-width:650px){.orderProductionGrid{grid-template-columns:1fr}.orderProductionGrid button{width:100%}}
+@media(max-width:650px){.orderHead{grid-template-columns:1fr}.orderHead>strong{font-size:18px}.orderActions{display:grid;grid-template-columns:1fr 1fr}.orderActions button{width:100%}.orderItemGrid{grid-template-columns:1fr 1fr}.orderEdit .two{grid-template-columns:1fr}.order{padding:12px}}
+
+/* DANVEXIS POS */
+.navTabs{display:flex;gap:8px;margin-bottom:16px}.navTabs button{width:auto;padding:11px 18px}.navTabs .active{background:#d7192d}.posGrid{display:grid;grid-template-columns:1.35fr .9fr;gap:16px}.posProducts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:68vh;overflow:auto}.posProduct{border:1px solid #292929;background:#0d0d0d;border-radius:12px;padding:12px}.posProduct h4{margin:4px 0 6px}.posProduct button{margin-bottom:0}.cartLine{border-bottom:1px solid #252525;padding:10px 0}.cartLine:last-child{border-bottom:0}.cartControls{display:grid;grid-template-columns:38px 54px 38px 1fr;gap:6px;align-items:center}.cartControls button,.cartControls input{margin:0}.cartTotal{font-size:30px;font-weight:900;margin:12px 0}.changeBox{padding:10px;border:1px solid #292929;border-radius:10px;margin:8px 0}.posMsg{margin-top:8px}.posSearch{margin-top:0}.posStats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.posStat{background:#0d0d0d;border:1px solid #292929;border-radius:12px;padding:11px}.posStat b{display:block;font-size:20px;margin-top:4px}.lowAlert{color:#ffbf5b;font-size:11px;font-weight:800}.discountLine{display:grid;grid-template-columns:1fr 120px;gap:8px}.historyLine{padding:10px 0;border-bottom:1px solid #252525}.historyLine:last-child{border:0}.receiptActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}@media(max-width:760px){.posGrid{grid-template-columns:1fr}.posProducts{grid-template-columns:1fr;max-height:none}.navTabs{display:grid;grid-template-columns:1fr 1fr}.navTabs button{width:100%}.cartTotal{font-size:25px}.posStats{grid-template-columns:1fr 1fr 1fr}.discountLine{grid-template-columns:1fr}.receiptActions{grid-template-columns:1fr}}
+.eodGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.historyActions{display:flex;gap:6px;margin-top:7px}.historyActions button{width:auto;margin:0;padding:8px 10px;font-size:11px}.refunded{opacity:.62}.cashierBadge{font-size:11px;color:#aaa;margin-top:5px}@media(max-width:760px){.eodGrid{grid-template-columns:1fr}.historyActions{display:grid;grid-template-columns:1fr 1fr}.historyActions button{width:100%}}
+
+/* DANVEXIS WHOLESALE */
+.whGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.whMetric{background:#0d0d0d;border:1px solid #292929;border-radius:12px;padding:12px}
+.whMetric b{display:block;font-size:22px;margin-top:5px}
+.whOrder{padding:14px;border:1px solid #292929;border-radius:12px;margin:10px 0;background:#0d0d0d}
+.whSizes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.whActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.whActions button{width:auto;margin:0}
+.whProfit{color:#72df8c;font-weight:900}
+@media(max-width:760px){.navTabs{grid-template-columns:1fr 1fr 1fr}.navTabs button{padding:11px 8px;font-size:11px}.whGrid,.whSizes{grid-template-columns:1fr}.whActions{display:grid;grid-template-columns:1fr 1fr}.whActions button{width:100%}}
+
+
+/* DANVEXIS new-order notifications */
+.notifyBtn{
+  border:1px solid #3b3b3b;background:#151515;color:#fff;border-radius:9px;
+  padding:10px 13px;font-weight:900;letter-spacing:.5px
+}
+.notifyBtn.on{border-color:#1f8f4d;background:#102819}
+.orderToast{
+  position:fixed;right:18px;top:18px;z-index:9999;width:min(360px,calc(100vw - 36px));
+  background:#111;border:1px solid #3b3b3b;border-left:4px solid #d61f2c;border-radius:12px;
+  padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.55);display:none
+}
+.orderToast.show{display:block;animation:dvxToastIn .22s ease}
+.orderToast b{display:block;font-size:15px;margin-bottom:5px}
+.orderToast span{display:block;color:#aaa;font-size:12px;line-height:1.55}
+@keyframes dvxToastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@media(max-width:650px){.orderToast{top:10px;right:10px;width:calc(100vw - 20px)}}
+
+
+/* Sound-control mobile polish */
+@media(max-width:650px){
+  header{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto auto;
+    gap:7px;
+    align-items:center;
+  }
+  header .brand{min-width:0}
+  #notifyBtn,#testSoundBtn,#logout{
+    width:auto !important;
+    min-height:48px;
+    padding:9px 10px;
+    font-size:11px;
+    line-height:1.25;
+  }
+}
+@media(max-width:430px){
+  header{
+    grid-template-columns:1fr 1fr;
+  }
+  header .brand{grid-column:1/-1}
+  #notifyBtn,#testSoundBtn,#logout{width:100% !important}
+}
+
+
+#mobilePushBtn.on{border-color:#2f78ff;background:#0c1b35}
+@media(max-width:650px){
+  header{grid-template-columns:minmax(0,1fr) auto auto auto !important}
+  #notifyBtn,#testSoundBtn,#mobilePushBtn,#logout{
+    width:auto !important;min-height:48px;padding:8px 9px;font-size:10px
+  }
+}
+@media(max-width:520px){
+  header{grid-template-columns:1fr 1fr !important}
+  header .brand{grid-column:1/-1}
+  #notifyBtn,#testSoundBtn,#mobilePushBtn,#logout{width:100% !important}
+}
+
+
+.orderFilters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.orderFilters button{width:auto;background:#1b1b1b;border:1px solid #333}
+.orderFilters button.active{background:#d7192d;border-color:#d7192d}
+@media(max-width:650px){
+  .orderFilters{display:grid;grid-template-columns:repeat(3,1fr)}
+  .orderFilters button{width:100%;font-size:11px;padding:10px 6px}
+}
+
+
+.adminSubTabs{display:flex;gap:8px;margin:12px 0 16px}
+.adminSubTabs button{width:auto;background:#1b1b1b;border:1px solid #333}
+.adminSubTabs button.active{background:#d7192d;border-color:#d7192d}
+@media(max-width:650px){
+  .adminSubTabs{display:grid;grid-template-columns:1fr 1fr}
+  .adminSubTabs button{width:100%}
+}
+
+
+/* DANVEXIS GARMENT INVENTORY */
+.adminSubTabs.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.adminSubTabs.three button{width:100%}
+.garmentMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.garmentMetric{background:#0d0d0d;border:1px solid #292929;border-radius:12px;padding:14px}
+.garmentMetric b{display:block;font-size:24px;margin-top:6px}
+.garmentFormGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.garmentCard{border:1px solid #292929;background:#0d0d0d;border-radius:12px;padding:14px;margin:10px 0}
+.garmentHead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}
+.garmentSizes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.garmentSize{background:#121212;border:1px solid #262626;border-radius:10px;padding:10px;text-align:center}
+.garmentSize b{display:block;font-size:20px;margin-top:4px}
+.garmentLow{color:#ffbf5b;font-weight:900}
+.garmentOut{color:#ff7474;font-weight:900}
+.garmentOk{color:#72df8c;font-weight:900}
+.garmentActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.garmentActions button{width:auto;margin:0}
+@media(max-width:760px){
+  .garmentMetrics,.garmentFormGrid{grid-template-columns:1fr}
+  .garmentSizes{grid-template-columns:repeat(3,1fr)}
+  .garmentActions{display:grid;grid-template-columns:1fr 1fr}
+  .garmentActions button{width:100%}
+}
+
+
+.garmentUsePanel{margin-top:12px;padding-top:12px;border-top:1px solid #292929}
+.garmentUseGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.garmentUseGrid input{margin:0}
+.garmentUseActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+@media(max-width:650px){.garmentUseGrid{grid-template-columns:repeat(3,1fr)}}
+
+
+/* CUSTOM ORDERS */
+.customOrder{padding:15px;border:1px solid #292929;border-radius:12px;margin:10px 0;background:#0d0d0d}.customOrderGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.customOrderGrid div{background:#121212;border:1px solid #242424;border-radius:9px;padding:9px}.customOrderGrid span{display:block;color:#888;font-size:10px;font-weight:900;letter-spacing:.7px;margin-bottom:4px}.customActions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}.customActions button{margin:0;width:auto}@media(max-width:650px){.adminSubTabs.three{grid-template-columns:1fr 1fr}.customOrderGrid{grid-template-columns:1fr}.customActions{grid-template-columns:1fr}.customActions button{width:100%}}
+</style>
+</head>
+<body>
+<header><div class="brand">DANVEXIS <span class="red">ADMIN</span></div><button id="notifyBtn" class="notifyBtn">🔔 ENABLE ORDER ALERTS</button><button id="testSoundBtn" class="notifyBtn">🔊 TEST SOUND</button><button id="mobilePushBtn" class="notifyBtn">📱 MOBILE PUSH</button><button id="logout" class="secondary hidden" style="width:auto">LOG OUT</button></header>
+<div class="wrap">
+<section id="login" class="card"><h2>Admin Login</h2><p class="muted">Use your Firebase Email/Password admin account.</p><input id="email" type="email" placeholder="Email"><input id="password" type="password" placeholder="Password"><button id="loginBtn">SIGN IN</button><div id="loginMsg"></div></section>
+<section id="dashboard" class="hidden">
+<div class="navTabs"><button id="adminTab" class="active">ADMIN</button><button id="wholesaleTab" class="secondary">WHOLESALE</button><button id="posTab" class="secondary">POS</button></div>
+<div id="adminPanel">
+<div class="adminSubTabs three">
+  <button id="productsSectionTab" class="active">PRODUCTS</button>
+  <button id="ordersSectionTab" class="secondary">ORDERS</button>
+  <button id="customOrdersSectionTab" class="secondary">CUSTOM ORDERS</button>
+  <button id="inventorySectionTab" class="secondary">GARMENT STOCK</button>
+</div>
+<div id="productsSection">
+<div class="grid"><div class="card metric">Orders<b id="orderCount">0</b></div><div class="card metric">Revenue<b id="revenue">LKR 0</b></div><div class="card metric">Pending<b id="pending">0</b></div></div>
+<div class="card">
+<div class="row"><div><h2 style="margin:0">Products & Quantity</h2><span class="muted">Edit quantity for every DANVEXIS product and every size.</span></div><div class="toolbar"><button id="importDrop" class="secondary">IMPORT / SYNC DROP 01</button><button id="toggleProduct">+ ADD PRODUCT</button></div></div>
+<div id="importMsg" class="muted"></div>
+<div id="productForm" class="hidden" style="margin-top:14px"><input id="productName" placeholder="Product name"><div class="two"><input id="productPrice" type="number" min="0" placeholder="Price (LKR)"><input id="productStock" type="number" min="0" placeholder="Stock quantity"></div><div class="two"><input id="productSize" placeholder="Size (e.g. M)"><input id="productCategory" placeholder="Category"></div><textarea id="productDescription" rows="4" placeholder="Description"></textarea><label class="muted">Product image</label><input id="productImage" type="file" accept="image/*"><div class="two"><button id="saveProduct">SAVE PRODUCT</button><button id="cancelProduct" class="secondary">CANCEL</button></div><div id="productMsg"></div></div>
+<div id="products" style="margin-top:14px"></div></div>
+</div>
+<div id="ordersSection" class="hidden">
+<div class="card">
+<div class="row"><div><h2 style="margin:0">Orders</h2><span class="muted">Live from Firestore /orders</span></div><button id="refresh" class="secondary" style="width:auto">REFRESH</button></div>
+<div class="orderFilters">
+<button id="filterAll" class="active">ALL <span id="allOrderCount">0</span></button>
+<button id="filterPending">PENDING <span id="pendingOrderCount">0</span></button>
+<button id="filterCompleted">COMPLETED <span id="completedOrderCount">0</span></button>
+</div>
+<div id="orders"></div></div>
+</div>
+</div>
+
+<div id="customOrdersSection" class="hidden">
+<div class="card">
+<div class="row"><div><h2 style="margin:0">Custom T-Shirt Orders</h2><span class="muted">Live from Firestore /customOrders · separate from normal website orders</span></div><button id="customRefresh" class="secondary" style="width:auto">REFRESH</button></div>
+<div class="orderFilters"><button id="customFilterAll" class="active">ALL <span id="customAllCount">0</span></button><button id="customFilterPending">PENDING <span id="customPendingCount">0</span></button><button id="customFilterCompleted">COMPLETED <span id="customCompletedCount">0</span></button></div>
+<div id="customOrders"><p class="muted">Loading custom orders...</p></div>
+</div></div>
+
+<div id="inventorySection" class="hidden">
+  <div class="garmentMetrics">
+    <div class="garmentMetric"><span class="muted">TOTAL BLANK GARMENTS</span><b id="garmentTotalUnits">0</b></div>
+    <div class="garmentMetric"><span class="muted">STOCK VALUE</span><b id="garmentStockValue">LKR 0</b></div>
+    <div class="garmentMetric"><span class="muted">LOW STOCK ITEMS</span><b id="garmentLowCount">0</b></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <h2 style="margin:0">Garment Stock</h2>
+        <span class="muted">Blank T-shirts · Type · GSM · Color · M/L/XL · Cost · Supplier</span>
+      </div>
+      <button id="toggleGarmentForm" style="width:auto">+ ADD GARMENT</button>
+    </div>
+
+    <div id="garmentForm" class="hidden" style="margin-top:14px">
+      <div class="garmentFormGrid">
+        <input id="garmentSku" placeholder="SKU e.g. PLAIN-190-BLK">
+        <select id="garmentType">
+          <option>Plain T-Shirt</option>
+          <option>Oversize</option>
+          <option>Crop Top</option>
+          <option>Arm Cut</option>
+          <option>Oversize Crop Top</option>
+        </select>
+        <select id="garmentGsm">
+          <option value="190">190 GSM</option>
+          <option value="220">220 GSM</option>
+          <option value="240">240 GSM</option>
+          <option value="280">280 GSM</option>
+        </select>
+        <input id="garmentColor" placeholder="Color" value="Black">
+        <input id="garmentM" type="number" min="0" value="0" placeholder="M Qty">
+        <input id="garmentL" type="number" min="0" value="0" placeholder="L Qty">
+        <input id="garmentXL" type="number" min="0" value="0" placeholder="XL Qty">
+        <input id="garmentCost" type="number" min="0" placeholder="Blank cost / piece">
+        <input id="garmentSupplier" placeholder="Supplier">
+        <input id="garmentLowLevel" type="number" min="0" value="3" placeholder="Low stock level">
+      </div>
+      <textarea id="garmentNote" rows="3" placeholder="Notes"></textarea>
+      <div class="two">
+        <button id="saveGarment">SAVE GARMENT</button>
+        <button id="cancelGarment" class="secondary">CANCEL</button>
+      </div>
+      <div id="garmentMsg"></div>
+    </div>
+
+    <div id="garmentList" style="margin-top:14px"><p class="muted">Loading garments...</p></div>
+  </div>
+</div>
+
+</div>
+
+<div id="wholesalePanel" class="hidden">
+  <div class="whGrid">
+    <div class="whMetric"><span class="muted">WHOLESALE ORDERS</span><b id="whCount">0</b></div>
+    <div class="whMetric"><span class="muted">WHOLESALE SALES</span><b id="whSales">LKR 0</b></div>
+    <div class="whMetric"><span class="muted">WHOLESALE PROFIT</span><b id="whProfit">LKR 0</b></div>
+  </div>
+  <div class="card">
+    <div class="row"><div><h2 style="margin:0">New Wholesale Order</h2><span class="muted">Save bulk T-shirt orders separately from retail/POS.</span></div><button id="whRefresh" class="secondary" style="width:auto">REFRESH</button></div>
+    <div class="two"><input id="whCustomer" placeholder="Customer / business name"><input id="whPhone" placeholder="Phone"></div>
+    <div class="two"><input id="whType" placeholder="T-shirt type (Plain / Oversize / Crop Top)"><input id="whColor" placeholder="Color"></div>
+    <div class="two"><input id="whGsm" type="number" min="0" placeholder="GSM"><input id="whPrint" placeholder="Printing (A4 / A3 / None)"></div>
+    <label class="muted">GARMENT STOCK SOURCE</label>
+    <select id="whGarmentStock"><option value="">Select garment stock item</option></select>
+    <div class="muted">Saving the wholesale order will automatically deduct M/L/XL from the selected blank garment stock.</div>
+    <div class="muted" style="margin-top:8px">QUANTITY BY SIZE</div>
+    <div class="whSizes"><input id="whM" type="number" min="0" value="0" placeholder="M qty"><input id="whL" type="number" min="0" value="0" placeholder="L qty"><input id="whXL" type="number" min="0" value="0" placeholder="XL qty"></div>
+    <div class="two"><input id="whGarmentCost" type="number" min="0" placeholder="Garment cost / piece"><input id="whPrintCost" type="number" min="0" placeholder="Print cost / piece"></div>
+    <div class="two"><input id="whPackCost" type="number" min="0" placeholder="Packaging + other / piece"><input id="whSellPrice" type="number" min="0" placeholder="Wholesale selling price / piece"></div>
+    <div class="two"><select id="whPayment"><option>Unpaid</option><option>Part Paid</option><option>Paid</option></select><select id="whStatus"><option>New</option><option>Confirmed</option><option>Printing</option><option>Packing</option><option>Ready</option><option>Delivered</option><option>Cancelled</option></select></div>
+    <textarea id="whNote" rows="3" placeholder="Notes"></textarea>
+    <div class="whGrid">
+      <div class="whMetric"><span class="muted">TOTAL PIECES</span><b id="whPieces">0</b></div>
+      <div class="whMetric"><span class="muted">TOTAL SALE</span><b id="whTotalSale">LKR 0</b></div>
+      <div class="whMetric"><span class="muted">PROFIT</span><b id="whLiveProfit" class="whProfit">LKR 0</b></div>
+    </div>
+    <button id="whSave">SAVE WHOLESALE ORDER</button><div id="whMsg"></div>
+  </div>
+  <div class="card"><h2 style="margin-top:0">Wholesale Orders</h2><div id="whOrders"><p class="muted">Loading...</p></div></div>
+</div>
+
+<div id="posPanel" class="hidden">
+  <div class="posGrid">
+    <div><div class="posStats"><div class="posStat"><span class="muted">TODAY SALES</span><b id="todayCount">0</b></div><div class="posStat"><span class="muted">TODAY REVENUE</span><b id="todayRevenue">LKR 0</b></div><div class="posStat"><span class="muted">LOW STOCK</span><b id="lowStockCount">0</b></div></div><div class="card"><div class="row"><div><h2 style="margin:0">Point of Sale</h2><span class="muted">Live DANVEXIS inventory · V8</span></div><button id="posReload" class="secondary" style="width:auto">REFRESH</button></div><input id="posSearch" class="posSearch" placeholder="Search product / SKU / barcode"><input id="barcodeInput" placeholder="Scan or type barcode/SKU and press Enter"><div id="posProducts" class="posProducts"></div></div><div class="card"><h3 style="margin-top:0">End of Day</h3><input id="reportDate" type="date"><button id="runReport" class="secondary">VIEW DAILY REPORT</button><div id="dailyReport" class="muted">Select a date to view payment totals.</div></div><div class="card"><h3 style="margin-top:0">Recent POS Sales</h3><div id="posHistory"><p class="muted">Loading...</p></div></div></div>
+    <div class="card"><h2 style="margin-top:0">Current Sale</h2><div id="posCart"><p class="muted">Cart is empty.</p></div><div class="discountLine"><input id="posDiscount" type="number" min="0" step="1" placeholder="Discount"><select id="discountType"><option value="amount">LKR discount</option><option value="percent">% discount</option></select></div><div class="muted">SUBTOTAL: <span id="posSubtotal">LKR 0</span> · DISCOUNT: <span id="posDiscountView">LKR 0</span></div><div class="cartTotal">TOTAL: <span id="posTotal">LKR 0</span></div><div class="two"><select id="posPayment"><option>Cash</option><option>Card</option><option>Bank Transfer</option></select><input id="posReceived" type="number" min="0" placeholder="Cash received"></div><div class="changeBox">CHANGE: <b id="posChange">LKR 0</b></div><input id="posCustomer" placeholder="Customer name (optional)"><input id="posPhone" placeholder="Phone (optional)"><button id="completeSale">COMPLETE SALE</button><button id="clearCart" class="secondary">CLEAR CART</button><div id="posMsg" class="posMsg"></div><div id="receiptActions" class="receiptActions hidden"><button id="printReceipt" class="secondary">PRINT LAST RECEIPT</button><button id="newSale" class="secondary">NEW SALE</button></div></div>
+  </div>
+</div>
+</section></div>
+
+<div id="orderToast" class="orderToast" role="status" aria-live="polite">
+  <b id="orderToastTitle">NEW CUSTOMER ORDER</b>
+  <span id="orderToastBody"></span>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, addDoc, deleteDoc, setDoc, serverTimestamp, query, orderBy, runTransaction, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-messaging.js";
+const firebaseConfig={apiKey:"AIzaSyB7VnK4N_Fo2JhCNcYL-UY9gyqhezXI0-8",authDomain:"danvexis-3a1e0.firebaseapp.com",projectId:"danvexis-3a1e0",storageBucket:"danvexis-3a1e0.firebasestorage.app",messagingSenderId:"1083975479921",appId:"1:1083975479921:web:3a67e7b171f2652def61d0",measurementId:"G-EWJPTVB38Y"};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);let editingProductId=null,editingImageData="";
+let editingGarmentId=null;
+let garmentInventoryCache=new Map();
+const DANVEXIS_VAPID_KEY="BENyKObuUy6mduA9ja309pwdinnrbJidCWKLJds_2FZWb-WYsZaTFr8syymJ7TK-BAPEkoFYDqG14rvC-tlDHhI";
+let messaging=null,messagingReady=false;
+
+async function setupMessagingObject(){
+  try{
+    if(!(await isSupported())) return false;
+    if(!messaging) messaging=getMessaging(app);
+    if(!messagingReady){
+      onMessage(messaging,payload=>{
+        const n=payload.notification||{},d=payload.data||{};
+        const fakeOrder={customer:{name:d.customerName||"Customer"},total:Number(d.total||0),items:[]};
+        showOrderToast(fakeOrder,d.orderId||"MOBILE");
+      });
+      messagingReady=true;
+    }
+    return true;
+  }catch(e){
+    console.warn("Messaging setup failed:",e);
+    return false;
+  }
+}
+
+async function enableMobilePush(){
+  const btn=$("mobilePushBtn");
+  try{
+    if(!("serviceWorker" in navigator)) throw new Error("Service workers are not supported.");
+    if(!("Notification" in window)) throw new Error("Notifications are not supported.");
+
+    const permission=await Notification.requestPermission();
+    if(permission!=="granted") throw new Error("Notification permission was not allowed.");
+
+    const reg=await navigator.serviceWorker.register("./firebase-messaging-sw.js");
+    await navigator.serviceWorker.ready;
+
+    if(!(await setupMessagingObject())) throw new Error("Firebase Messaging is not supported on this device.");
+
+    const token=await getToken(messaging,{
+      vapidKey:DANVEXIS_VAPID_KEY,
+      serviceWorkerRegistration:reg
+    });
+    if(!token) throw new Error("Could not create the mobile push token.");
+
+    if(!auth.currentUser) throw new Error("Please log in first.");
+
+    await setDoc(doc(db,"pushTokens",auth.currentUser.uid),{
+      token,
+      email:auth.currentUser.email||"",
+      platform:navigator.userAgent,
+      enabled:true,
+      updatedAt:serverTimestamp()
+    },{merge:true});
+
+    localStorage.setItem("dvxMobilePush","1");
+    btn.textContent="📱 PUSH ON";
+    btn.classList.add("on");
+    alert("DANVEXIS mobile push is registered on this iPhone.");
+  }catch(e){
+    console.error(e);
+    btn.textContent="📱 PUSH ERROR";
+    alert(e.message||String(e));
+  }
+}
+
+const DROP01=[
+{sku:"DVX-01",name:"Ghost Delivery Club",price:2250,imageUrl:"https://danvexis.netlify.app/assets/ghost.jpeg",sizes:["M"],stock:{M:5},color:"White",category:"Oversized T-Shirt"},
+{sku:"DVX-11",name:"Design 11",price:2250,imageUrl:"https://danvexis.netlify.app/assets/design11.jpeg",sizes:["M"],stock:{M:5},color:"Black",category:"Oversized T-Shirt"},
+{sku:"DVX-10",name:"Design 10",price:2250,imageUrl:"https://danvexis.netlify.app/assets/design10.jpeg",sizes:["M"],stock:{M:5},color:"Black",category:"Oversized T-Shirt"},
+{sku:"DVX-09",name:"Design 09",price:2250,imageUrl:"https://danvexis.netlify.app/assets/design09.jpeg",sizes:["L"],stock:{L:5},color:"Black",category:"Oversized T-Shirt"},
+{sku:"DVX-08",name:"Design 08",price:2250,imageUrl:"https://danvexis.netlify.app/assets/design08.jpeg",sizes:["M"],stock:{M:5},color:"Black",category:"Oversized T-Shirt"},
+{sku:"DVX-07",name:"Design 07",price:2250,imageUrl:"https://danvexis.netlify.app/assets/design07.jpeg",sizes:["L"],stock:{L:5},color:"Black",category:"Oversized T-Shirt"},
+{sku:"DVX-06B",name:"Design 06 — Black",price:2250,imageUrl:"https://danvexis.netlify.app/assets/design06black.jpeg",sizes:["M"],stock:{M:5},color:"Black",category:"Oversized T-Shirt"},
+{sku:"DVX-05",name:"Design 05",price:2250,imageUrl:"https://danvexis.netlify.app/assets/design05.jpeg",sizes:["L"],stock:{L:5},color:"Green",category:"Oversized T-Shirt"},
+{sku:"DVX-03",name:"Unshaken — Design 03",price:2250,imageUrl:"https://danvexis.netlify.app/assets/design03.jpeg",sizes:["L"],stock:{L:5},color:"White",category:"Oversized T-Shirt"},
+{sku:"DVX-06R",name:"Design 06 — Red",price:2250,imageUrl:"https://danvexis.netlify.app/assets/design06red.jpeg",sizes:["M"],stock:{M:5},color:"Red",category:"Oversized T-Shirt"}
+];
+const safe=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));const money=v=>"LKR "+Number(v||0).toLocaleString();
+
+let orderNotifyUnsub=null,orderNotifyReady=false,orderNotifyKnown=new Set(),orderNotifyTimer=null,orderPollTimer=null;
+
+let orderAudioCtx=null;
+
+async function ensureOrderAudio(){
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;
+    if(!Ctx)return false;
+    if(!orderAudioCtx) orderAudioCtx=new Ctx();
+    if(orderAudioCtx.state==="suspended") await orderAudioCtx.resume();
+
+    // Very short silent oscillator unlocks audio on iOS after a user tap.
+    const osc=orderAudioCtx.createOscillator(),gain=orderAudioCtx.createGain();
+    osc.connect(gain);gain.connect(orderAudioCtx.destination);
+    gain.gain.setValueAtTime(.00001,orderAudioCtx.currentTime);
+    osc.start();osc.stop(orderAudioCtx.currentTime+.015);
+    return true;
+  }catch(e){
+    console.warn("Audio unlock failed:",e);
+    return false;
+  }
+}
+
+async function orderAlertSound(){
+  try{
+    const ok=await ensureOrderAudio();
+    if(!ok)return;
+
+    const ctx=orderAudioCtx;
+    const now=ctx.currentTime;
+
+    // Loud POS-style 3-part bell/chime.
+    const notes=[
+      {t:0.00,f:880,d:.30,v:.28},
+      {t:0.08,f:1320,d:.26,v:.20},
+      {t:0.36,f:988,d:.34,v:.30},
+      {t:0.44,f:1480,d:.28,v:.20},
+      {t:0.76,f:1175,d:.48,v:.34},
+      {t:0.84,f:1760,d:.36,v:.22}
+    ];
+
+    notes.forEach(n=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.type="sine";
+      osc.frequency.setValueAtTime(n.f,now+n.t);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      gain.gain.setValueAtTime(.0001,now+n.t);
+      gain.gain.exponentialRampToValueAtTime(n.v,now+n.t+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+n.t+n.d);
+
+      osc.start(now+n.t);
+      osc.stop(now+n.t+n.d+.02);
+    });
+
+    if(navigator.vibrate) navigator.vibrate([220,90,220,90,300]);
+  }catch(e){
+    console.warn("Order sound:",e);
+  }
+}
+
+async function testOrderSound(){
+  const btn=$("testSoundBtn");
+  if(btn){
+    btn.textContent="🔊 PLAYING...";
+    btn.classList.add("on");
+  }
+  await ensureOrderAudio();
+  await orderAlertSound();
+  setTimeout(()=>{
+    if(btn){
+      btn.textContent="🔊 TEST SOUND";
+      btn.classList.remove("on");
+    }
+  },1600);
+}
+
+function showOrderToast(order,id){
+  const customer=order.customer||{};
+  const name=customer.name||'Customer';
+  const total=money(order.total||0);
+  const items=Array.isArray(order.items)?order.items.reduce((a,x)=>a+Number(x.qty||1),0):0;
+  $("orderToastTitle").textContent="🔔 NEW CUSTOMER ORDER";
+  $("orderToastBody").textContent=`${name} · ${items} item${items===1?'':'s'} · ${total} · ${id.slice(0,10).toUpperCase()}`;
+  $("orderToast").classList.add("show");
+  clearTimeout(orderNotifyTimer);
+  orderNotifyTimer=setTimeout(()=>$("orderToast").classList.remove("show"),15000);
+  orderAlertSound().catch(()=>{});
+  if("Notification" in window && Notification.permission==="granted"){
+    try{
+      new Notification("DANVEXIS — New Order",{
+        body:`${name} · ${total}`,
+        tag:"danvexis-order-"+id
+      });
+    }catch(e){}
+  }
+}
+async function enableOrderAlerts(){
+  const btn=$("notifyBtn");
+  localStorage.setItem("dvxOrderAlerts","1");
+  await ensureOrderAudio();
+
+  // iPhone/iOS browsers require a user tap before Web Audio can reliably play.
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;
+    if(Ctx){
+      if(!orderAudioCtx) orderAudioCtx=new Ctx();
+      if(orderAudioCtx.state==="suspended") await orderAudioCtx.resume();
+      const osc=orderAudioCtx.createOscillator(),gain=orderAudioCtx.createGain();
+      osc.connect(gain);gain.connect(orderAudioCtx.destination);
+      gain.gain.setValueAtTime(.0001,orderAudioCtx.currentTime);
+      osc.start();osc.stop(orderAudioCtx.currentTime+.01);
+    }
+  }catch(e){}
+
+  if("Notification" in window){
+    try{
+      if(Notification.permission==="default") await Notification.requestPermission();
+    }catch(e){}
+  }
+
+  stopOrderNotifications();
+  startOrderNotifications();
+
+  btn.textContent="🔔 ORDER ALERTS ON";
+  btn.classList.add("on");
+  btn.style.transform="scale(.98)";
+  setTimeout(()=>btn.style.transform="",140);
+}
+function startOrderNotifications(){
+  if(orderNotifyUnsub)return;
+  orderNotifyReady=false;
+  orderNotifyKnown.clear();
+  const qOrders=query(collection(db,"orders"),orderBy("createdAt","desc"));
+  orderNotifyUnsub=onSnapshot(qOrders,snap=>{
+    if(!orderNotifyReady){
+      snap.docs.forEach(d=>orderNotifyKnown.add(d.id));
+      orderNotifyReady=true;
+      startOrderPolling();
+      return;
+    }
+    let changed=false;
+    snap.docChanges().forEach(ch=>{
+      if(ch.type!=="added" || orderNotifyKnown.has(ch.doc.id))return;
+      orderNotifyKnown.add(ch.doc.id);
+      const order=ch.doc.data()||{};
+      // Customer website orders only; don't alert for sales entered from this POS.
+      if(order.source==="POS")return;
+      showOrderToast(order,ch.doc.id);
+      changed=true;
+    });
+    if(changed)loadOrders();
+  },err=>console.error("Order notification listener:",err));
+}
+
+async function pollForNewOrders(){
+  if(!auth.currentUser || !orderNotifyReady)return;
+  try{
+    const snap=await getDocs(collection(db,"orders"));
+    let changed=false;
+
+    snap.forEach(d=>{
+      if(orderNotifyKnown.has(d.id))return;
+
+      orderNotifyKnown.add(d.id);
+      const order=d.data()||{};
+
+      // Ignore POS-created sales; alert only customer/website orders.
+      if(String(order.source||"").toUpperCase()==="POS")return;
+
+      showOrderToast(order,d.id);
+      changed=true;
+    });
+
+    if(changed)loadOrders();
+  }catch(e){
+    console.warn("Order polling fallback:",e);
+  }
+}
+
+function startOrderPolling(){
+  if(orderPollTimer)return;
+  orderPollTimer=setInterval(pollForNewOrders,3000);
+}
+
+function stopOrderPolling(){
+  if(orderPollTimer){
+    clearInterval(orderPollTimer);
+    orderPollTimer=null;
+  }
+}
+
+function stopOrderNotifications(){
+  if(orderNotifyUnsub){orderNotifyUnsub();orderNotifyUnsub=null}
+  stopOrderPolling();
+  orderNotifyReady=false;orderNotifyKnown.clear();
+}
+$("orderToast").onclick=()=>$("orderToast").classList.remove("show");
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden && auth.currentUser){
+    loadOrders();
+    pollForNewOrders();
+  }
+});
+$("notifyBtn").onclick=enableOrderAlerts;
+$("testSoundBtn").onclick=testOrderSound;
+$("mobilePushBtn").onclick=enableMobilePush;
+$("loginBtn").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);$("loginMsg").textContent=""}catch(e){$("loginMsg").innerHTML='<p class="error">'+safe(e.message)+'</p>'}};$("logout").onclick=()=>signOut(auth);$("refresh").onclick=loadOrders;$("toggleProduct").onclick=openAddProduct;$("cancelProduct").onclick=()=>resetForm(true);$("saveProduct").onclick=saveProduct;$("importDrop").onclick=importDrop;
+
+let customOrderFilter="all";
+function customValue(d,keys,fallback="—"){for(const k of keys){if(d[k]!==undefined&&d[k]!==null&&String(d[k]).trim()!=="")return d[k]}return fallback}
+function customStatusState(status){status=String(status||"New").toLowerCase();if(["completed","delivered","done"].includes(status))return "completed";if(["cancelled","canceled","rejected"].includes(status))return "other";return "pending"}
+async function loadCustomOrders(){
+ const box=$("customOrders"); if(!box)return; box.innerHTML='<p class="muted">Loading custom orders...</p>';
+ try{
+  let snap;try{snap=await getDocs(query(collection(db,"customOrders"),orderBy("createdAt","desc")))}catch{snap=await getDocs(collection(db,"customOrders"))}
+  let pending=0,completed=0,rows=[];
+  snap.forEach(s=>{const d=s.data()||{},status=customValue(d,["status"],"New"),state=customStatusState(status);if(state==="pending")pending++;if(state==="completed")completed++;
+   const requestNo=customValue(d,["requestNumber","requestNo","orderNumber"],s.id.slice(0,12).toUpperCase());
+   const name=customValue(d,["customerName","name"],d.customer&&d.customer.name||"Customer"); const phone=customValue(d,["phone","customerPhone"],d.customer&&d.customer.phone||"—");
+   const type=customValue(d,["tshirtType","shirtType","garmentType","type"]); const qty=customValue(d,["quantity","qty","pieces"]); const size=customValue(d,["size","sizes"]); const print=customValue(d,["printSize","printing","printType"]); const address=customValue(d,["deliveryAddress","address"]); const province=customValue(d,["province"]); const note=customValue(d,["note","extraNote","notes"]); const artwork=customValue(d,["artworkLink","referenceArtwork","referenceLink"],"");
+   const sizeText=typeof size==="object"?JSON.stringify(size):String(size);
+   const html=`<div class="customOrder"><div class="orderHead"><div><div class="sku">${safe(requestNo)}</div><div class="name">${safe(name)}</div><div class="muted">${safe(phone)}</div></div><strong>${safe(status)}</strong></div><div class="customOrderGrid"><div><span>T-SHIRT / TYPE</span>${safe(type)}</div><div><span>QUANTITY</span>${safe(qty)}</div><div><span>SIZE</span>${safe(sizeText)}</div><div><span>PRINTING</span>${safe(print)}</div><div><span>DELIVERY ADDRESS</span>${safe(address)}</div><div><span>PROVINCE</span>${safe(province)}</div>${note!=="—"?`<div><span>EXTRA NOTE</span>${safe(note)}</div>`:""}${artwork?`<div><span>ARTWORK LINK</span><a href="${safe(artwork)}" target="_blank" rel="noopener" style="color:#72df8c">OPEN ARTWORK</a></div>`:""}</div><div class="customActions"><select class="customStatus" data-id="${safe(s.id)}">${["New","Contacted","Confirmed","Designing","Printing","Packing","Ready","Delivered","Cancelled"].map(x=>`<option ${x===status?"selected":""}>${x}</option>`).join("")}</select><button class="danger customDelete" data-id="${safe(s.id)}">DELETE</button></div></div>`;
+   rows.push({state,html});
+  });
+  $("customAllCount").textContent=snap.size;$("customPendingCount").textContent=pending;$("customCompletedCount").textContent=completed;
+  box.innerHTML=rows.filter(r=>customOrderFilter==="all"||r.state===customOrderFilter).map(r=>r.html).join("")||'<p class="muted">No custom orders in this section.</p>';
+  box.querySelectorAll(".customStatus").forEach(el=>el.onchange=async()=>{await updateDoc(doc(db,"customOrders",el.dataset.id),{status:el.value,updatedAt:serverTimestamp()});loadCustomOrders()});
+  box.querySelectorAll(".customDelete").forEach(b=>b.onclick=async()=>{if(confirm("Delete this custom order?")){await deleteDoc(doc(db,"customOrders",b.dataset.id));loadCustomOrders()}});
+ }catch(e){box.innerHTML='<p class="error">'+safe(e.message)+'</p>'}
+}
+function setCustomFilter(f){customOrderFilter=f;[["customFilterAll","all"],["customFilterPending","pending"],["customFilterCompleted","completed"]].forEach(([id,v])=>$(id).classList.toggle("active",v===f));loadCustomOrders()}
+$("customRefresh").onclick=loadCustomOrders;$("customFilterAll").onclick=()=>setCustomFilter("all");$("customFilterPending").onclick=()=>setCustomFilter("pending");$("customFilterCompleted").onclick=()=>setCustomFilter("completed");
+
+function showAdminSection(which){
+  const products=which==="products";
+  const orders=which==="orders";
+  const inventory=which==="inventory";
+  const customOrders=which==="customOrders";
+
+  $("productsSection").classList.toggle("hidden",!products);
+  $("ordersSection").classList.toggle("hidden",!orders);
+  $("inventorySection").classList.toggle("hidden",!inventory);
+  $("customOrdersSection").classList.toggle("hidden",!customOrders);
+
+  [
+    ["productsSectionTab",products],
+    ["ordersSectionTab",orders],
+    ["customOrdersSectionTab",customOrders],
+    ["inventorySectionTab",inventory]
+  ].forEach(([id,on])=>{
+    $(id).classList.toggle("active",on);
+    $(id).classList.toggle("secondary",!on);
+  });
+
+  if(orders)loadOrders();
+  if(customOrders)loadCustomOrders();
+  if(inventory)loadGarmentInventory();
+}
+$("productsSectionTab").onclick=()=>showAdminSection("products");
+$("ordersSectionTab").onclick=()=>showAdminSection("orders");
+$("customOrdersSectionTab").onclick=()=>showAdminSection("customOrders");
+$("inventorySectionTab").onclick=()=>showAdminSection("inventory");
+
+$("adminTab").onclick=()=>showPanel("admin");$("wholesaleTab").onclick=()=>showPanel("wholesale");$("posTab").onclick=()=>showPanel("pos");$("posReload").onclick=loadPosProducts;$("posSearch").oninput=renderPosProducts;$("posPayment").onchange=updatePosTotals;$("posReceived").oninput=updatePosTotals;$("posDiscount").oninput=updatePosTotals;$("discountType").onchange=updatePosTotals;$("barcodeInput").onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addByBarcode()}};$("printReceipt").onclick=printLastReceipt;$("newSale").onclick=()=>{$("receiptActions").classList.add("hidden");$("posMsg").textContent="";$("posSearch").focus()};$("clearCart").onclick=()=>{posCart=[];renderPosCart()};$("completeSale").onclick=completePosSale;$("runReport").onclick=runDailyReport;
+
+onAuthStateChanged(auth,u=>{$("login").classList.toggle("hidden",!!u);$("dashboard").classList.toggle("hidden",!u);$("logout").classList.toggle("hidden",!u);if(u){loadProducts();loadOrders();loadCustomOrders();loadGarmentInventory();startOrderNotifications();setupMessagingObject();if(localStorage.getItem("dvxOrderAlerts")==="1"){$("notifyBtn").textContent="🔔 ORDER ALERTS ON";$("notifyBtn").classList.add("on")}if(localStorage.getItem("dvxMobilePush")==="1"){$("mobilePushBtn").textContent="📱 PUSH ON";$("mobilePushBtn").classList.add("on")}const d=new Date();$('reportDate').value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}else{stopOrderNotifications()}});
+function normalize(d){let sizes=[],stock={};if(Array.isArray(d.sizes)&&d.sizes.length){sizes=d.sizes.map(String);if(d.stock&&typeof d.stock==='object'&&!Array.isArray(d.stock))stock={...d.stock};else sizes.forEach(s=>stock[s]=Number(d.stock||0))}else{const s=String(d.size||'M').trim()||'M';sizes=[s];stock={[s]:Number(d.stock||0)}}return{sizes,stock}}
+async function importDrop(){const m=$("importMsg");m.textContent="Syncing DROP 01 products...";try{for(const p of DROP01){const ref=doc(db,"products",p.sku);const snapList=await getDocs(query(collection(db,"products")));let existing=null;snapList.forEach(s=>{const d=s.data();if(s.id===p.sku||d.sku===p.sku)existing={id:s.id,data:d}});if(existing){const n=normalize(existing.data);await setDoc(doc(db,"products",existing.id),{...p,...existing.data,sku:p.sku,sizes:n.sizes,stock:n.stock,active:true,updatedAt:serverTimestamp()},{merge:true})}else{await setDoc(ref,{...p,active:true,createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true})}}m.innerHTML='<span class="ok">DROP 01 synced. You can now edit quantity for every product.</span>';await loadProducts()}catch(e){m.innerHTML='<span class="error">'+safe(e.message)+'</span>'}}
+function compressImage(file){return new Promise((resolve,reject)=>{if(!file){resolve("");return}const r=new FileReader();r.onerror=()=>reject(new Error("Could not read image"));r.onload=()=>{const img=new Image();img.onload=()=>{const max=1000,sc=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);c.getContext('2d').drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.68))};img.onerror=()=>reject(new Error("Could not process image"));img.src=r.result};r.readAsDataURL(file)})}
+function resetForm(hide=false){editingProductId=null;editingImageData="";["productName","productPrice","productStock","productSize","productCategory","productDescription","productImage"].forEach(id=>$(id).value="");$("saveProduct").textContent="SAVE PRODUCT";$("productMsg").textContent="";if(hide)$("productForm").classList.add("hidden")}
+function openAddProduct(){resetForm(false);$("productForm").classList.remove("hidden")}
+function openEdit(id,d){const n=normalize(d);editingProductId=id;editingImageData=d.imageData||"";$("productName").value=d.name||"";$("productPrice").value=Number(d.price||0);$("productStock").value=Number(n.stock[n.sizes[0]]||0);$("productSize").value=n.sizes[0]||"";$("productCategory").value=d.category||"";$("productDescription").value=d.description||"";$("saveProduct").textContent="UPDATE PRODUCT";$("productForm").classList.remove("hidden");$("productForm").scrollIntoView({behavior:'smooth'})}
+async function saveProduct(){const name=$("productName").value.trim(),price=Number($("productPrice").value),qty=Number($("productStock").value),size=$("productSize").value.trim()||'M';if(!name||price<0||qty<0)return $("productMsg").innerHTML='<span class="error">Enter valid name, price and quantity.</span>';try{const f=$("productImage").files[0],img=f?await compressImage(f):editingImageData;const payload={name,price,size,sizes:[size],stock:{[size]:qty},stockTotal:qty,category:$("productCategory").value.trim(),description:$("productDescription").value.trim(),imageData:img,active:true,updatedAt:serverTimestamp()};if(editingProductId)await updateDoc(doc(db,"products",editingProductId),payload);else await addDoc(collection(db,"products"),{...payload,createdAt:serverTimestamp()});$("productMsg").innerHTML='<span class="ok">Saved successfully.</span>';await loadProducts()}catch(e){$("productMsg").innerHTML='<span class="error">'+safe(e.message)+'</span>'}}
+async function changeQty(id,size,delta){const input=document.querySelector(`[data-stock-id="${CSS.escape(id)}"][data-size="${CSS.escape(size)}"]`);const next=Math.max(0,Number(input.value||0)+delta);input.value=next;await saveQty(id,size,next)}
+async function saveQty(id,size,val){val=Math.max(0,Number(val||0));const snap=await getDocs(collection(db,"products"));let data={};snap.forEach(s=>{if(s.id===id)data=s.data()});const n=normalize(data);n.stock[size]=val;if(!n.sizes.includes(size))n.sizes.push(size);const total=n.sizes.reduce((a,s)=>a+Number(n.stock[s]||0),0);await updateDoc(doc(db,"products",id),{sizes:n.sizes,stock:n.stock,stockTotal:total,updatedAt:serverTimestamp()});const badge=document.querySelector(`[data-total-id="${CSS.escape(id)}"]`);if(badge)badge.textContent=`TOTAL ${total}`}
+async function loadProducts(){const box=$("products");box.innerHTML='<p class="muted">Loading...</p>';try{const snap=await getDocs(collection(db,"products")),map=new Map(),rows=[];snap.forEach(s=>{const d=s.data(),n=normalize(d),total=n.sizes.reduce((a,z)=>a+Number(n.stock[z]||0),0);map.set(s.id,d);const img=d.imageData||d.imageUrl||'';rows.push(`<div class="product"><div class="productMain">${img?`<img src="${safe(img)}">`:'<div></div>'}<div><div class="sku">${safe(d.sku||'DANVEXIS PRODUCT')}</div><div class="name">${safe(d.name||'Product')}</div><div class="muted">${safe(d.category||'DANVEXIS')} · ${money(d.price)} · <b data-total-id="${safe(s.id)}">TOTAL ${total}</b></div><span class="stockStatus ${total===0?'out':total<=2?'low':'in'}">${total===0?'SOLD OUT':total<=2?'LOW STOCK':'IN STOCK'}</span></div><div class="actions"><button class="secondary edit" data-id="${safe(s.id)}">EDIT DETAILS</button><button class="danger del" data-id="${safe(s.id)}">DELETE</button></div></div><div class="stockEditor"><div class="muted">QUANTITY BY SIZE</div>${n.sizes.map(z=>`<div class="stockRow"><b>${safe(z)}</b><button class="secondary minus" data-id="${safe(s.id)}" data-size="${safe(z)}">−</button><input type="number" min="0" value="${Number(n.stock[z]||0)}" data-stock-id="${safe(s.id)}" data-size="${safe(z)}"><button class="secondary plus" data-id="${safe(s.id)}" data-size="${safe(z)}">+</button><button class="saveStock saveqty" data-id="${safe(s.id)}" data-size="${safe(z)}">SAVE</button></div>`).join('')}</div></div>`)});box.innerHTML=rows.join('')||'<p class="muted">No products yet. Tap IMPORT / SYNC DROP 01.</p>';box.querySelectorAll('.edit').forEach(b=>b.onclick=()=>openEdit(b.dataset.id,map.get(b.dataset.id)||{}));box.querySelectorAll('.del').forEach(b=>b.onclick=async()=>{if(confirm('Delete this product?')){await deleteDoc(doc(db,'products',b.dataset.id));loadProducts()}});box.querySelectorAll('.minus').forEach(b=>b.onclick=()=>changeQty(b.dataset.id,b.dataset.size,-1));box.querySelectorAll('.plus').forEach(b=>b.onclick=()=>changeQty(b.dataset.id,b.dataset.size,1));box.querySelectorAll('.saveqty').forEach(b=>b.onclick=()=>{const i=document.querySelector(`[data-stock-id="${CSS.escape(b.dataset.id)}"][data-size="${CSS.escape(b.dataset.size)}"]`);saveQty(b.dataset.id,b.dataset.size,i.value)});}catch(e){box.innerHTML='<p class="error">'+safe(e.message)+'</p>'}}
+
+function resetGarmentForm(hide=false){
+  editingGarmentId=null;
+  ["garmentSku","garmentSupplier","garmentNote"].forEach(id=>$(id).value="");
+  $("garmentType").value="Plain T-Shirt";
+  $("garmentGsm").value="190";
+  $("garmentColor").value="Black";
+  ["garmentM","garmentL","garmentXL"].forEach(id=>$(id).value="0");
+  $("garmentCost").value="";
+  $("garmentLowLevel").value="3";
+  $("saveGarment").textContent="SAVE GARMENT";
+  $("garmentMsg").textContent="";
+  if(hide)$("garmentForm").classList.add("hidden");
+}
+
+function openGarmentEdit(id,d){
+  editingGarmentId=id;
+  $("garmentSku").value=d.sku||"";
+  $("garmentType").value=d.type||"Plain T-Shirt";
+  $("garmentGsm").value=String(d.gsm||190);
+  $("garmentColor").value=d.color||"Black";
+  const z=d.sizes||{};
+  $("garmentM").value=Number(z.M||0);
+  $("garmentL").value=Number(z.L||0);
+  $("garmentXL").value=Number(z.XL||0);
+  $("garmentCost").value=Number(d.costPerPiece||0);
+  $("garmentSupplier").value=d.supplier||"";
+  $("garmentLowLevel").value=Number(d.lowStockLevel??3);
+  $("garmentNote").value=d.note||"";
+  $("saveGarment").textContent="UPDATE GARMENT";
+  $("garmentForm").classList.remove("hidden");
+  $("garmentForm").scrollIntoView({behavior:"smooth"});
+}
+
+async function saveGarmentInventory(){
+  const msg=$("garmentMsg"),btn=$("saveGarment");
+  const sku=$("garmentSku").value.trim();
+  const type=$("garmentType").value;
+  const gsm=Number($("garmentGsm").value||0);
+  const color=$("garmentColor").value.trim();
+  const sizes={
+    M:Math.max(0,Number($("garmentM").value||0)),
+    L:Math.max(0,Number($("garmentL").value||0)),
+    XL:Math.max(0,Number($("garmentXL").value||0))
+  };
+  const costPerPiece=Math.max(0,Number($("garmentCost").value||0));
+  const lowStockLevel=Math.max(0,Number($("garmentLowLevel").value||3));
+  const supplier=$("garmentSupplier").value.trim();
+  const note=$("garmentNote").value.trim();
+  const total=sizes.M+sizes.L+sizes.XL;
+
+  if(!sku||!type||!color){
+    msg.innerHTML='<span class="error">Enter SKU, type and color.</span>';
+    return;
+  }
+
+  const payload={
+    sku,type,gsm,color,sizes,total,costPerPiece,lowStockLevel,supplier,note,
+    updatedAt:serverTimestamp()
+  };
+
+  btn.disabled=true;
+  try{
+    if(editingGarmentId){
+      await updateDoc(doc(db,"garmentInventory",editingGarmentId),payload);
+    }else{
+      await addDoc(collection(db,"garmentInventory"),{...payload,createdAt:serverTimestamp()});
+    }
+    msg.innerHTML='<span class="ok">Garment stock saved.</span>';
+    resetGarmentForm(true);
+    await loadGarmentInventory();
+  }catch(e){
+    msg.innerHTML='<span class="error">'+safe(e.message)+'</span>';
+  }finally{
+    btn.disabled=false;
+  }
+}
+
+
+async function useGarmentStock(id){
+  const card=document.querySelector(`[data-garment-card="${CSS.escape(id)}"]`);
+  const d=garmentInventoryCache.get(id)||{};
+  if(!card)return;
+
+  const m=Math.max(0,Number(card.querySelector(".useM").value||0));
+  const l=Math.max(0,Number(card.querySelector(".useL").value||0));
+  const xl=Math.max(0,Number(card.querySelector(".useXL").value||0));
+  const used=m+l+xl;
+  const reason=card.querySelector(".useReason").value;
+
+  if(used<1)return alert("Enter at least 1 garment to deduct.");
+
+  try{
+    await runTransaction(db,async tx=>{
+      const ref=doc(db,"garmentInventory",id);
+      const snap=await tx.get(ref);
+      if(!snap.exists())throw new Error("Garment stock item no longer exists.");
+
+      const live=snap.data()||{},z={...(live.sizes||{})};
+      const need={M:m,L:l,XL:xl};
+
+      for(const size of ["M","L","XL"]){
+        const have=Number(z[size]||0);
+        if(have<need[size])throw new Error(`Not enough ${size} stock. Only ${have} left.`);
+      }
+
+      for(const size of ["M","L","XL"])z[size]=Number(z[size]||0)-need[size];
+      const total=Number(z.M||0)+Number(z.L||0)+Number(z.XL||0);
+
+      tx.update(ref,{
+        sizes:z,
+        total,
+        lastDeduction:{sizes:need,total:used,reason,by:(auth.currentUser&&auth.currentUser.email)||"Admin"},
+        updatedAt:serverTimestamp()
+      });
+    });
+
+    alert(`GARMENT STOCK UPDATED\n\n${used} piece${used===1?"":"s"} deducted.`);
+    await loadGarmentInventory();
+  }catch(e){
+    alert("STOCK NOT DEDUCTED\n\n"+e.message);
+  }
+}
+
+async function loadGarmentInventory(){
+  const box=$("garmentList");
+  box.innerHTML='<p class="muted">Loading garments...</p>';
+  try{
+    let snap;
+    try{snap=await getDocs(query(collection(db,"garmentInventory"),orderBy("createdAt","desc")))}
+    catch{snap=await getDocs(collection(db,"garmentInventory"))}
+
+    let units=0,value=0,low=0,rows=[];
+    garmentInventoryCache=new Map();
+
+    const wholesaleSelect=$("whGarmentStock");
+    if(wholesaleSelect)wholesaleSelect.innerHTML='<option value="">Select garment stock item</option>';
+
+    snap.forEach(x=>{
+      const d=x.data()||{};
+      garmentInventoryCache.set(x.id,d);
+      const z=d.sizes||{};
+      const m=Number(z.M||0),l=Number(z.L||0),xl=Number(z.XL||0);
+      const total=Number(d.total ?? (m+l+xl));
+      const level=Number(d.lowStockLevel??3);
+      const cost=Number(d.costPerPiece||0);
+
+      units+=total;
+      value+=total*cost;
+
+      const lowSizes=["M","L","XL"].filter(size=>Number(z[size]||0)<=level);
+      if(lowSizes.length)low++;
+
+      const status=total===0
+        ? '<span class="garmentOut">OUT OF STOCK</span>'
+        : lowSizes.length
+          ? `<span class="garmentLow">LOW: ${lowSizes.join(", ")}</span>`
+          : '<span class="garmentOk">IN STOCK</span>';
+
+      rows.push(`
+        <div class="garmentCard" data-garment-card="${safe(x.id)}">
+          <div class="garmentHead">
+            <div>
+              <div class="sku">${safe(d.sku||"GARMENT")}</div>
+              <div class="name">${safe(d.type||"Garment")} · ${safe(d.gsm||"")} GSM · ${safe(d.color||"")}</div>
+              <div class="muted">${d.supplier?`Supplier: ${safe(d.supplier)} · `:""}${money(cost)} / piece · ${status}</div>
+            </div>
+            <strong>${total} pcs</strong>
+          </div>
+
+          <div class="garmentSizes">
+            <div class="garmentSize"><span class="muted">M</span><b>${m}</b></div>
+            <div class="garmentSize"><span class="muted">L</span><b>${l}</b></div>
+            <div class="garmentSize"><span class="muted">XL</span><b>${xl}</b></div>
+          </div>
+
+          ${d.note?`<div class="muted">${safe(d.note)}</div>`:""}
+
+          <div class="garmentUsePanel">
+            <div class="muted" style="font-weight:900;margin-bottom:8px">USE / DEDUCT BLANK GARMENTS</div>
+            <div class="garmentUseGrid">
+              <input class="useM" type="number" min="0" value="0" placeholder="M used">
+              <input class="useL" type="number" min="0" value="0" placeholder="L used">
+              <input class="useXL" type="number" min="0" value="0" placeholder="XL used">
+            </div>
+            <select class="useReason">
+              <option>Production</option>
+              <option>Wholesale Order</option>
+              <option>Sample</option>
+              <option>Damage</option>
+              <option>Other</option>
+            </select>
+            <button class="useGarment" data-id="${safe(x.id)}">DEDUCT STOCK</button>
+          </div>
+
+          <div class="garmentActions">
+            <button class="secondary garmentEdit" data-id="${safe(x.id)}">EDIT</button>
+            <button class="danger garmentDelete" data-id="${safe(x.id)}">DELETE</button>
+          </div>
+        </div>`);
+
+      if(wholesaleSelect){
+        const opt=document.createElement("option");
+        opt.value=x.id;
+        opt.textContent=`${d.sku||"GARMENT"} · ${d.type||""} · ${d.gsm||""} GSM · ${d.color||""} · ${total} pcs`;
+        wholesaleSelect.appendChild(opt);
+      }
+    });
+
+    $("garmentTotalUnits").textContent=units;
+    $("garmentStockValue").textContent=money(value);
+    $("garmentLowCount").textContent=low;
+    box.innerHTML=rows.join("")||'<p class="muted">No blank garments yet. Tap + ADD GARMENT.</p>';
+
+    box.querySelectorAll(".garmentEdit").forEach(b=>b.onclick=()=>openGarmentEdit(b.dataset.id,garmentInventoryCache.get(b.dataset.id)||{}));
+    box.querySelectorAll(".garmentDelete").forEach(b=>b.onclick=async()=>{
+      if(confirm("Delete this garment stock item?")){
+        await deleteDoc(doc(db,"garmentInventory",b.dataset.id));
+        loadGarmentInventory();
+      }
+    });
+    box.querySelectorAll(".useGarment").forEach(b=>b.onclick=()=>useGarmentStock(b.dataset.id));
+  }catch(e){
+    box.innerHTML='<p class="error">'+safe(e.message)+'</p>';
+  }
+}
+
+$("toggleGarmentForm").onclick=()=>{
+  resetGarmentForm(false);
+  $("garmentForm").classList.toggle("hidden");
+};
+$("cancelGarment").onclick=()=>resetGarmentForm(true);
+$("saveGarment").onclick=saveGarmentInventory;
+
+let orderCache=new Map();
+let orderFilter="all";
+function orderItemsSummary(items){return items.map(x=>safe((x.name||x.id||'Item')+(x.size?' · '+x.size:'')+' × '+(x.qty||1))).join(' • ')}
+function renderOrderItems(id,items){return (items.length?items:[{name:'',size:'',qty:1,price:0}]).map((x,i)=>`<div class="orderItemEdit" data-item-index="${i}"><div class="orderItemGrid"><input class="oi-name" value="${safe(x.name||x.id||'')}" placeholder="Product"><input class="oi-size" value="${safe(x.size||'')}" placeholder="Size"><input class="oi-qty" type="number" min="1" value="${Number(x.qty||1)}" placeholder="Qty"><input class="oi-price" type="number" min="0" value="${Number(x.price||0)}" placeholder="Price"></div></div>`).join('')}
+function toggleOrderEdit(id){const el=document.querySelector(`[data-order-edit="${CSS.escape(id)}"]`);if(el)el.classList.toggle('hidden')}
+async function saveOrderEdit(id){const root=document.querySelector(`[data-order-edit="${CSS.escape(id)}"]`),old=orderCache.get(id)||{},oldCustomer=old.customer||{};if(!root)return;const items=[...root.querySelectorAll('.orderItemEdit')].map(r=>({name:r.querySelector('.oi-name').value.trim(),size:r.querySelector('.oi-size').value.trim(),qty:Math.max(1,Number(r.querySelector('.oi-qty').value||1)),price:Math.max(0,Number(r.querySelector('.oi-price').value||0))})).filter(x=>x.name);const customer={...oldCustomer,name:root.querySelector('.oe-name').value.trim(),phone:root.querySelector('.oe-phone').value.trim(),email:root.querySelector('.oe-email').value.trim()};const payload={customer,address:root.querySelector('.oe-address').value.trim(),city:root.querySelector('.oe-city').value.trim(),province:root.querySelector('.oe-province').value.trim(),total:Math.max(0,Number(root.querySelector('.oe-total').value||0)),status:root.querySelector('.oe-status').value,items,updatedAt:serverTimestamp()};const msg=root.querySelector('.orderMsg');try{msg.innerHTML='<span class="muted">Saving...</span>';await updateDoc(doc(db,'orders',id),payload);msg.innerHTML='<span class="ok">Order updated successfully.</span>';setTimeout(loadOrders,500)}catch(e){msg.innerHTML='<span class="error">'+safe(e.message)+'</span>'}}
+async function deleteOrder(id){if(!confirm('Delete this order permanently?'))return;try{await deleteDoc(doc(db,'orders',id));await loadOrders()}catch(e){alert(e.message)}}
+
+function orderSizeNeeds(items){
+  const need={M:0,L:0,XL:0};
+  (Array.isArray(items)?items:[]).forEach(x=>{
+    const size=String(x.size||'').trim().toUpperCase();
+    const qty=Math.max(1,Number(x.qty||1));
+    if(Object.prototype.hasOwnProperty.call(need,size))need[size]+=qty;
+  });
+  return need;
+}
+function garmentOptionsHtml(selected=''){
+  let out='<option value="">Select blank garment stock</option>';
+  garmentInventoryCache.forEach((d,id)=>{
+    const z=d.sizes||{}, total=Number(d.total ?? (Number(z.M||0)+Number(z.L||0)+Number(z.XL||0)));
+    out+=`<option value="${safe(id)}" ${id===selected?'selected':''}>${safe(d.sku||'GARMENT')} · ${safe(d.type||'')} · ${safe(d.gsm||'')} GSM · ${safe(d.color||'')} · ${total} pcs</option>`;
+  });
+  return out;
+}
+async function sendOrderToProduction(id,garmentId){
+  if(!garmentId)return alert('Select the blank garment stock item first.');
+  const order=orderCache.get(id)||{};
+  if(order.garmentStockDeducted===true)return alert('Garment stock was already deducted for this order.');
+  const need=orderSizeNeeds(order.items);
+  const used=need.M+need.L+need.XL;
+  if(used<1)return alert('This order has no M / L / XL quantities to deduct.');
+  if(!confirm(`SEND TO PRODUCTION?\n\nM: ${need.M} · L: ${need.L} · XL: ${need.XL}\n\nThis will deduct ${used} blank garment${used===1?'':'s'} from stock.`))return;
+  try{
+    await runTransaction(db,async tx=>{
+      const gRef=doc(db,'garmentInventory',garmentId),oRef=doc(db,'orders',id);
+      const gSnap=await tx.get(gRef),oSnap=await tx.get(oRef);
+      if(!gSnap.exists())throw new Error('Selected garment stock item no longer exists.');
+      if(!oSnap.exists())throw new Error('Order no longer exists.');
+      const liveOrder=oSnap.data()||{};
+      if(liveOrder.garmentStockDeducted===true)throw new Error('Garment stock was already deducted for this order.');
+      const g=gSnap.data()||{},z={...(g.sizes||{})};
+      for(const size of ['M','L','XL']){
+        const have=Number(z[size]||0);
+        if(have<need[size])throw new Error(`Not enough ${size} stock. Need ${need[size]}, only ${have} left.`);
+      }
+      for(const size of ['M','L','XL'])z[size]=Number(z[size]||0)-need[size];
+      const total=Number(z.M||0)+Number(z.L||0)+Number(z.XL||0);
+      tx.update(gRef,{sizes:z,total,lastDeduction:{sizes:need,total:used,reason:'Customer Order '+id.slice(0,10),orderId:id,by:(auth.currentUser&&auth.currentUser.email)||'Admin'},updatedAt:serverTimestamp()});
+      tx.update(oRef,{status:'Production',garmentStockId:garmentId,garmentStockDeducted:true,garmentDeduction:need,garmentDeductedAt:serverTimestamp(),updatedAt:serverTimestamp()});
+    });
+    alert(`ORDER SENT TO PRODUCTION\n\n${used} blank garment${used===1?'':'s'} deducted successfully.`);
+    await loadGarmentInventory();
+    await loadOrders();
+  }catch(e){alert('STOCK NOT DEDUCTED\n\n'+e.message)}
+}
+async function loadOrders(){
+  const box=$("orders");
+  box.innerHTML='<p class="muted">Loading orders...</p>';
+  try{
+    let snap;
+    try{snap=await getDocs(query(collection(db,'orders'),orderBy('createdAt','desc')))}
+    catch{snap=await getDocs(collection(db,'orders'))}
+
+    let total=0,pending=0,completed=0,allRows=[];
+    orderCache=new Map();
+
+    snap.forEach(s=>{
+      const d=s.data(),status=(d.refunded===true||d.refundedAt)?'Refunded':(d.status||'New'),amount=Number(d.total||0);
+      orderCache.set(s.id,d);
+      if(status!=='Refunded'&&status!=='Cancelled')total+=amount;
+
+      const isCompleted=status==='Delivered';
+      const isPending=!['Delivered','Cancelled','Refunded'].includes(status);
+      if(isPending)pending++;
+      if(isCompleted)completed++;
+
+      const c=d.customer||{},items=Array.isArray(d.items)?d.items:[];
+      const address=d.address||c.address||'',city=d.city||c.city||'',province=d.province||c.province||'';
+
+      const html=`<div class="order"><div class="orderHead"><div><b>Order ${safe(s.id.slice(0,10))}</b><div class="muted">${safe(c.name||d.name||'Customer')} · ${safe(c.phone||d.phone||'')}</div><div class="muted orderSummary">${orderItemsSummary(items)||'No item details'}${address?'<br>'+safe(address):''}${city?' · '+safe(city):''}</div></div><strong>${money(amount)}</strong></div><select class="quickStatus" data-id="${safe(s.id)}">${['New','Confirmed','Production','Shipped','Delivered','Cancelled','Refunded'].map(x=>`<option ${x===status?'selected':''}>${x}</option>`).join('')}</select><div class="orderProduction"><div class="muted" style="font-weight:900;margin-bottom:7px">PRODUCTION / BLANK GARMENT STOCK</div><div class="orderProductionGrid"><select class="orderGarmentSource" data-id="${safe(s.id)}" ${d.garmentStockDeducted===true?'disabled':''}>${garmentOptionsHtml(d.garmentStockId||'')}</select><button class="sendProduction ${d.garmentStockDeducted===true?'secondary':''}" data-id="${safe(s.id)}" ${d.garmentStockDeducted===true?'disabled':''}>${d.garmentStockDeducted===true?'✓ STOCK DEDUCTED':'SEND TO PRODUCTION + DEDUCT'}</button></div>${d.garmentStockDeducted===true?`<div class="ok" style="margin-top:7px">Deducted: M ${Number((d.garmentDeduction||{}).M||0)} · L ${Number((d.garmentDeduction||{}).L||0)} · XL ${Number((d.garmentDeduction||{}).XL||0)}</div>`:''}</div><div class="orderActions"><button class="secondary editOrder" data-id="${safe(s.id)}">EDIT ORDER</button><button class="danger deleteOrder" data-id="${safe(s.id)}">DELETE ORDER</button></div><div class="orderEdit hidden" data-order-edit="${safe(s.id)}"><h3 style="margin:0 0 8px">Edit Order</h3><div class="two"><div><label>CUSTOMER NAME</label><input class="oe-name" value="${safe(c.name||d.name||'')}"></div><div><label>PHONE</label><input class="oe-phone" value="${safe(c.phone||d.phone||'')}"></div></div><div class="two"><div><label>EMAIL</label><input class="oe-email" value="${safe(c.email||d.email||'')}"></div><div><label>TOTAL (LKR)</label><input class="oe-total" type="number" min="0" value="${amount}"></div></div><label>ADDRESS</label><input class="oe-address" value="${safe(address)}"><div class="two"><div><label>CITY</label><input class="oe-city" value="${safe(city)}"></div><div><label>PROVINCE</label><input class="oe-province" value="${safe(province)}"></div></div><label>ORDER STATUS</label><select class="oe-status">${['New','Confirmed','Production','Shipped','Delivered','Cancelled','Refunded'].map(x=>`<option ${x===status?'selected':''}>${x}</option>`).join('')}</select><label>PRODUCTS</label><div class="oe-items">${renderOrderItems(s.id,items)}</div><button class="secondary addItem" type="button">+ ADD ITEM</button><div class="two"><button class="saveOrder" data-id="${safe(s.id)}">SAVE CHANGES</button><button class="secondary cancelOrder" data-id="${safe(s.id)}">CANCEL</button></div><div class="orderMsg"></div></div></div>`;
+
+      allRows.push({html,state:isCompleted?'completed':isPending?'pending':'other'});
+    });
+
+    $("orderCount").textContent=snap.size;
+    $("revenue").textContent=money(total);
+    $("pending").textContent=pending;
+    $("allOrderCount").textContent=snap.size;
+    $("pendingOrderCount").textContent=pending;
+    $("completedOrderCount").textContent=completed;
+
+    const rows=allRows.filter(r=>orderFilter==='all'||r.state===orderFilter).map(r=>r.html);
+    box.innerHTML=rows.join('')||'<p class="muted">No orders in this section.</p>';
+
+    box.querySelectorAll('.quickStatus').forEach(el=>el.onchange=async()=>{
+      await updateDoc(doc(db,'orders',el.dataset.id),{status:el.value,updatedAt:serverTimestamp()});
+      loadOrders()
+    });
+    box.querySelectorAll('.sendProduction').forEach(b=>b.onclick=()=>{const root=b.closest('.order'),sel=root&&root.querySelector('.orderGarmentSource');sendOrderToProduction(b.dataset.id,sel?sel.value:'')});
+    box.querySelectorAll('.editOrder').forEach(b=>b.onclick=()=>toggleOrderEdit(b.dataset.id));
+    box.querySelectorAll('.deleteOrder').forEach(b=>b.onclick=()=>deleteOrder(b.dataset.id));
+    box.querySelectorAll('.saveOrder').forEach(b=>b.onclick=()=>saveOrderEdit(b.dataset.id));
+    box.querySelectorAll('.cancelOrder').forEach(b=>b.onclick=()=>toggleOrderEdit(b.dataset.id));
+    box.querySelectorAll('.addItem').forEach(b=>b.onclick=()=>{
+      const edit=b.closest('.orderEdit'),wrap=edit.querySelector('.oe-items'),i=wrap.children.length;
+      wrap.insertAdjacentHTML('beforeend',renderOrderItems('',[{name:'',size:'',qty:1,price:0}]).replace('data-item-index="0"',`data-item-index="${i}"`))
+    });
+  }catch(e){
+    box.innerHTML='<p class="error">'+safe(e.message)+'</p>'
+  }
+}
+
+function setOrderFilter(filter){
+  orderFilter=filter;
+  [["filterAll","all"],["filterPending","pending"],["filterCompleted","completed"]].forEach(([id,val])=>{
+    $(id).classList.toggle("active",filter===val);
+  });
+  loadOrders();
+}
+
+$("filterAll").onclick=()=>setOrderFilter("all");
+$("filterPending").onclick=()=>setOrderFilter("pending");
+$("filterCompleted").onclick=()=>setOrderFilter("completed");
+
+const whIds=["whM","whL","whXL","whGarmentCost","whPrintCost","whPackCost","whSellPrice"];
+function wholesaleCalc(){
+  const m=Math.max(0,Number($("whM").value||0)),l=Math.max(0,Number($("whL").value||0)),xl=Math.max(0,Number($("whXL").value||0));
+  const pieces=m+l+xl,unitCost=Math.max(0,Number($("whGarmentCost").value||0))+Math.max(0,Number($("whPrintCost").value||0))+Math.max(0,Number($("whPackCost").value||0));
+  const sell=Math.max(0,Number($("whSellPrice").value||0)),totalSale=pieces*sell,totalCost=pieces*unitCost,profit=totalSale-totalCost;
+  $("whPieces").textContent=pieces;$("whTotalSale").textContent=money(totalSale);$("whLiveProfit").textContent=money(profit);
+  return{pieces,totalSale,totalCost,profit,sizes:{M:m,L:l,XL:xl},unitCost,sell};
+}
+whIds.forEach(id=>$(id).oninput=wholesaleCalc);
+$("whRefresh").onclick=loadWholesaleOrders;
+$("whSave").onclick=saveWholesaleOrder;
+
+
+async function saveWholesaleOrder(){
+  const c=wholesaleCalc(),msg=$("whMsg"),btn=$("whSave"),
+    customer=$("whCustomer").value.trim(),phone=$("whPhone").value.trim(),
+    type=$("whType").value.trim(),garmentStockId=$("whGarmentStock").value;
+
+  if(!customer||!type||c.pieces<1){
+    msg.innerHTML='<span class="error">Enter customer, T-shirt type and at least 1 piece.</span>';
+    return;
+  }
+  if(!garmentStockId){
+    msg.innerHTML='<span class="error">Select the blank garment stock item to deduct.</span>';
+    return;
+  }
+
+  btn.disabled=true;
+  msg.innerHTML='<span class="muted">Saving wholesale order and deducting garment stock...</span>';
+
+  try{
+    const orderRef=doc(collection(db,"wholesaleOrders"));
+    const garmentRef=doc(db,"garmentInventory",garmentStockId);
+
+    await runTransaction(db,async tx=>{
+      const garmentSnap=await tx.get(garmentRef);
+      if(!garmentSnap.exists())throw new Error("Selected garment stock item no longer exists.");
+
+      const gd=garmentSnap.data()||{},z={...(gd.sizes||{})};
+      for(const size of ["M","L","XL"]){
+        const need=Number(c.sizes[size]||0),have=Number(z[size]||0);
+        if(have<need)throw new Error(`Not enough ${size} blank garments. Need ${need}, only ${have} available.`);
+      }
+
+      for(const size of ["M","L","XL"]){
+        z[size]=Number(z[size]||0)-Number(c.sizes[size]||0);
+      }
+      const garmentTotal=Number(z.M||0)+Number(z.L||0)+Number(z.XL||0);
+
+      tx.update(garmentRef,{
+        sizes:z,
+        total:garmentTotal,
+        lastDeduction:{sizes:c.sizes,total:c.pieces,reason:"Wholesale Order",by:(auth.currentUser&&auth.currentUser.email)||"Admin"},
+        updatedAt:serverTimestamp()
+      });
+
+      tx.set(orderRef,{
+        source:"WHOLESALE",
+        orderType:"Wholesale T-shirt order",
+        customer:{name:customer,phone},
+        tshirtType:type,
+        color:$("whColor").value.trim(),
+        gsm:Number($("whGsm").value||0),
+        printing:$("whPrint").value.trim(),
+        sizes:c.sizes,
+        totalPieces:c.pieces,
+        garmentStockId,
+        garmentSku:gd.sku||"",
+        garmentCostPerPiece:Number($("whGarmentCost").value||0),
+        printCostPerPiece:Number($("whPrintCost").value||0),
+        packagingOtherPerPiece:Number($("whPackCost").value||0),
+        wholesalePricePerPiece:c.sell,
+        totalCost:c.totalCost,
+        total:c.totalSale,
+        profit:c.profit,
+        paymentStatus:$("whPayment").value,
+        status:$("whStatus").value,
+        note:$("whNote").value.trim(),
+        createdBy:(auth.currentUser&&auth.currentUser.email)||"Admin",
+        createdAt:serverTimestamp(),
+        updatedAt:serverTimestamp()
+      });
+    });
+
+    msg.innerHTML='<span class="ok">Wholesale order saved and blank garment stock deducted automatically.</span>';
+
+    ["whCustomer","whPhone","whType","whColor","whGsm","whPrint","whGarmentCost","whPrintCost","whPackCost","whSellPrice","whNote"].forEach(id=>$(id).value="");
+    ["whM","whL","whXL"].forEach(id=>$(id).value="0");
+    $("whGarmentStock").value="";
+    $("whPayment").value="Unpaid";
+    $("whStatus").value="New";
+    wholesaleCalc();
+
+    await Promise.all([loadWholesaleOrders(),loadGarmentInventory()]);
+  }catch(e){
+    msg.innerHTML='<span class="error">'+safe(e.message)+'</span>';
+  }finally{
+    btn.disabled=false;
+  }
+}
+async function loadWholesaleOrders(){
+  const box=$("whOrders");box.innerHTML='<p class="muted">Loading wholesale orders...</p>';
+  try{
+    let snap;try{snap=await getDocs(query(collection(db,'wholesaleOrders'),orderBy('createdAt','desc')))}catch{snap=await getDocs(collection(db,'wholesaleOrders'))}
+    let sales=0,profit=0,rows=[];
+    snap.forEach(s=>{
+      const d=s.data(),cancelled=d.status==='Cancelled';if(!cancelled){sales+=Number(d.total||0);profit+=Number(d.profit||0)}
+      const z=d.sizes||{},c=d.customer||{};
+      rows.push(`<div class="whOrder"><div class="orderHead"><div><b>${safe(d.tshirtType||'Wholesale T-shirt')} · ${Number(d.totalPieces||0)} pcs</b><div class="muted">${safe(c.name||'Customer')} · ${safe(c.phone||'')}</div><div class="muted">M ${Number(z.M||0)} · L ${Number(z.L||0)} · XL ${Number(z.XL||0)}${d.gsm?' · '+safe(d.gsm)+' GSM':''}${d.color?' · '+safe(d.color):''}</div><div class="muted">Payment: ${safe(d.paymentStatus||'Unpaid')} · Status: ${safe(d.status||'New')}</div></div><div><strong>${money(d.total||0)}</strong><div class="whProfit">${money(d.profit||0)} profit</div></div></div><div class="whActions"><select class="whStatusEdit" data-id="${safe(s.id)}">${['New','Confirmed','Printing','Packing','Ready','Delivered','Cancelled'].map(x=>`<option ${x===(d.status||'New')?'selected':''}>${x}</option>`).join('')}</select><select class="whPayEdit" data-id="${safe(s.id)}">${['Unpaid','Part Paid','Paid'].map(x=>`<option ${x===(d.paymentStatus||'Unpaid')?'selected':''}>${x}</option>`).join('')}</select><button class="danger whDelete" data-id="${safe(s.id)}">DELETE</button></div></div>`);
+    });
+    $("whCount").textContent=snap.size;$("whSales").textContent=money(sales);$("whProfit").textContent=money(profit);box.innerHTML=rows.join('')||'<p class="muted">No wholesale orders yet.</p>';
+    box.querySelectorAll('.whStatusEdit').forEach(el=>el.onchange=async()=>{await updateDoc(doc(db,'wholesaleOrders',el.dataset.id),{status:el.value,updatedAt:serverTimestamp()});loadWholesaleOrders()});
+    box.querySelectorAll('.whPayEdit').forEach(el=>el.onchange=async()=>{await updateDoc(doc(db,'wholesaleOrders',el.dataset.id),{paymentStatus:el.value,updatedAt:serverTimestamp()});loadWholesaleOrders()});
+    box.querySelectorAll('.whDelete').forEach(b=>b.onclick=async()=>{if(confirm('Delete this wholesale order permanently?')){await deleteDoc(doc(db,'wholesaleOrders',b.dataset.id));loadWholesaleOrders()}});
+  }catch(e){box.innerHTML='<p class="error">'+safe(e.message)+'</p>'}
+}
+wholesaleCalc();
+
+
+let posProductCache=[],posCart=[];
+function showPanel(which){
+  const admin=which==='admin',wholesale=which==='wholesale',pos=which==='pos';
+  $("adminPanel").classList.toggle('hidden',!admin);
+  $("wholesalePanel").classList.toggle('hidden',!wholesale);
+  $("posPanel").classList.toggle('hidden',!pos);
+  [["adminTab",admin],["wholesaleTab",wholesale],["posTab",pos]].forEach(([id,on])=>{$(id).classList.toggle('active',on);$(id).classList.toggle('secondary',!on)});
+  if(wholesale){loadWholesaleOrders();loadGarmentInventory();}
+  if(pos){loadPosProducts();loadPosHistory()}
+}
+async function loadPosProducts(){const box=$("posProducts");box.innerHTML='<p class="muted">Loading stock...</p>';try{const snap=await getDocs(collection(db,'products'));posProductCache=[];snap.forEach(s=>{const d=s.data(),n=normalize(d);posProductCache.push({id:s.id,...d,_sizes:n.sizes,_stock:n.stock})});renderPosProducts()}catch(e){box.innerHTML='<p class="error">'+safe(e.message)+'</p>'}}
+function renderPosProducts(){const q=($("posSearch").value||'').trim().toLowerCase(),box=$("posProducts");const list=posProductCache.filter(p=>!q||String(p.name||'').toLowerCase().includes(q)||String(p.sku||'').toLowerCase().includes(q));box.innerHTML=list.map(p=>`<div class="posProduct"><div class="sku">${safe(p.sku||'PRODUCT')}</div><h4>${safe(p.name||'Product')}</h4><div class="muted">${money(p.price)}</div>${p._sizes.map(z=>{const left=Number(p._stock[z]||0);return `<button class="${left?'':'secondary'} posAdd" data-id="${safe(p.id)}" data-size="${safe(z)}" ${left?'':'disabled'}>${safe(z)} · ${left} LEFT</button>`}).join('')}</div>`).join('')||'<p class="muted">No matching products.</p>';box.querySelectorAll('.posAdd').forEach(b=>b.onclick=()=>addPosItem(b.dataset.id,b.dataset.size))}
+function addPosItem(id,size){const p=posProductCache.find(x=>x.id===id);if(!p)return;const available=Number(p._stock[size]||0),existing=posCart.find(x=>x.id===id&&x.size===size);if(existing){if(existing.qty>=available)return alert('No more stock available for this size.');existing.qty++}else posCart.push({id,size,name:p.name||'Product',sku:p.sku||'',price:Number(p.price||0),qty:1,available});renderPosCart()}
+function posSubtotal(){return posCart.reduce((a,x)=>a+x.price*x.qty,0)}
+function posDiscountAmount(){const sub=posSubtotal(),v=Math.max(0,Number($("posDiscount").value||0));return $("discountType").value==='percent'?Math.min(sub,sub*Math.min(100,v)/100):Math.min(sub,v)}
+function posGrandTotal(){return Math.max(0,posSubtotal()-posDiscountAmount())}
+function renderPosCart(){const box=$("posCart");box.innerHTML=posCart.length?posCart.map((x,i)=>`<div class="cartLine"><b>${safe(x.name)}</b><div class="muted">${safe(x.size)} · ${money(x.price)} each</div><div class="cartControls"><button class="secondary cartMinus" data-i="${i}">−</button><input value="${x.qty}" readonly><button class="secondary cartPlus" data-i="${i}">+</button><button class="danger cartRemove" data-i="${i}">REMOVE</button></div></div>`).join(''):'<p class="muted">Cart is empty.</p>';box.querySelectorAll('.cartMinus').forEach(b=>b.onclick=()=>{const x=posCart[+b.dataset.i];x.qty--;if(x.qty<=0)posCart.splice(+b.dataset.i,1);renderPosCart()});box.querySelectorAll('.cartPlus').forEach(b=>b.onclick=()=>{const x=posCart[+b.dataset.i];if(x.qty<x.available)x.qty++;else alert('No more stock available.');renderPosCart()});box.querySelectorAll('.cartRemove').forEach(b=>b.onclick=()=>{posCart.splice(+b.dataset.i,1);renderPosCart()});updatePosTotals()}
+function updatePosTotals(){const sub=posSubtotal(),disc=posDiscountAmount(),total=posGrandTotal(),received=Number($("posReceived").value||0),cash=$("posPayment").value==='Cash';$("posSubtotal").textContent=money(sub);$("posDiscountView").textContent=money(disc);$("posTotal").textContent=money(total);$("posReceived").disabled=!cash;$("posChange").textContent=money(cash?Math.max(0,received-total):0)}
+let lastReceipt=null;
+function addByBarcode(){const v=$("barcodeInput").value.trim().toLowerCase();if(!v)return;const p=posProductCache.find(x=>String(x.sku||'').toLowerCase()===v||String(x.barcode||'').toLowerCase()===v||String(x.id).toLowerCase()===v);if(!p){$("posMsg").innerHTML='<span class="error">No product matches '+safe(v)+'.</span>';return}const size=p._sizes.find(z=>Number(p._stock[z]||0)>0);if(!size){$("posMsg").innerHTML='<span class="error">'+safe(p.name)+' is sold out.</span>';return}addPosItem(p.id,size);$("barcodeInput").value='';$("posMsg").innerHTML='<span class="ok">Added '+safe(p.name)+' · '+safe(size)+'</span>'}
+async function loadPosHistory(){try{let snap;try{snap=await getDocs(query(collection(db,'orders'),orderBy('createdAt','desc')))}catch{snap=await getDocs(collection(db,'orders'))}const now=new Date(),todayKey=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');let count=0,revenue=0,low=0,rows=[];posOrderCache=new Map();snap.forEach(d=>{const x=d.data();if(x.source!=='POS')return;posOrderCache.set(d.id,x);const dt=x.createdAt&&x.createdAt.toDate?x.createdAt.toDate():null,key=dt?dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'):'';const voided=x.refunded===true||!!x.refundedAt||x.status==='Refunded'||x.status==='Cancelled';if(key===todayKey&&!voided){count++;revenue+=Number(x.total||0)}if(rows.length<12)rows.push(`<div class="historyLine ${voided?'refunded':''}"><b>${safe(d.id.slice(0,10))}</b> · ${money(x.total)}<div class="muted">${safe((x.customer||{}).name||'Walk-in')} · ${safe(x.paymentMethod||'')} · ${safe(x.status||'Delivered')}</div><div class="cashierBadge">Cashier: ${safe(x.cashier||'Admin')}</div><div class="historyActions"><button class="secondary reprintSale" data-id="${safe(d.id)}">REPRINT</button>${voided?'':`<button class="danger refundSale" data-id="${safe(d.id)}">REFUND + RESTOCK</button>`}</div></div>`)});posProductCache.forEach(p=>p._sizes.forEach(z=>{const n=Number(p._stock[z]||0);if(n>0&&n<=2)low++}));$("todayCount").textContent=count;$("todayRevenue").textContent=money(revenue);$("lowStockCount").textContent=low;$("posHistory").innerHTML=rows.join('')||'<p class="muted">No POS sales yet.</p>';$("posHistory").querySelectorAll('.reprintSale').forEach(b=>b.onclick=()=>reprintSale(b.dataset.id));$("posHistory").querySelectorAll('.refundSale').forEach(b=>b.onclick=()=>refundSale(b.dataset.id))}catch(e){$("posHistory").innerHTML='<p class="error">'+safe(e.message)+'</p>'}}
+function receiptFromOrder(id,x){return{id:id.slice(0,10),date:x.createdAt&&x.createdAt.toDate?x.createdAt.toDate().toLocaleString():'Saved sale',customer:(x.customer||{}).name||'Walk-in Customer',payment:x.paymentMethod||'',cashier:x.cashier||'Admin',items:Array.isArray(x.items)?x.items:[],subtotal:Number(x.subtotal??x.total??0),discount:Number(x.discount||0),total:Number(x.total||0),received:Number(x.amountReceived??x.total??0),change:Number(x.change||0)}}
+function printReceiptData(r){const w=window.open('','_blank','width=360,height=700');if(!w)return alert('Allow pop-ups to print the receipt.');const items=r.items.map(x=>`<tr><td>${safe(x.name)} ${safe(x.size||'')}</td><td>${Number(x.qty||1)}</td><td style="text-align:right">${money(Number(x.price||0)*Number(x.qty||1))}</td></tr>`).join('');w.document.write(`<!doctype html><html><head><title>DANVEXIS Receipt</title><style>@page{size:80mm auto;margin:4mm}html,body{width:72mm;margin:0 auto;padding:0;color:#111;font-family:Arial,sans-serif}h1{text-align:center;letter-spacing:3px;font-size:20px;margin:4mm 0 1mm}.center{text-align:center}.line{border-top:1px dashed #555;margin:3mm 0}table{width:100%;border-collapse:collapse}td{padding:1.5mm 0;font-size:11px}.total{font-size:18px;font-weight:800;text-align:right;margin:2mm 0}.small{font-size:10px;color:#444;line-height:1.45}
+/* DANVEXIS WHOLESALE */
+.whGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.whMetric{background:#0d0d0d;border:1px solid #292929;border-radius:12px;padding:12px}
+.whMetric b{display:block;font-size:22px;margin-top:5px}
+.whOrder{padding:14px;border:1px solid #292929;border-radius:12px;margin:10px 0;background:#0d0d0d}
+.whSizes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.whActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.whActions button{width:auto;margin:0}
+.whProfit{color:#72df8c;font-weight:900}
+@media(max-width:760px){.navTabs{grid-template-columns:1fr 1fr 1fr}.navTabs button{padding:11px 8px;font-size:11px}.whGrid,.whSizes{grid-template-columns:1fr}.whActions{display:grid;grid-template-columns:1fr 1fr}.whActions button{width:100%}}
+
+</style></head><body><h1>DANVEXIS</h1><div class="center small">POS RECEIPT</div><div class="line"></div><div class="small">Order: ${safe(r.id)}<br>${safe(r.date)}<br>Customer: ${safe(r.customer)}<br>Payment: ${safe(r.payment)}<br>Cashier: ${safe(r.cashier||'Admin')}</div><div class="line"></div><table>${items}</table><div class="line"></div><div>Subtotal: ${money(r.subtotal)}</div><div>Discount: -${money(r.discount)}</div><div class="total">TOTAL ${money(r.total)}</div>${r.payment==='Cash'?`<div>Received: ${money(r.received)}<br>Change: ${money(r.change)}</div>`:''}<div class="line"></div><div class="center small">THANK YOU · EVOLVE WITHOUT LIMITS</div><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
+function printLastReceipt(){if(!lastReceipt)return alert('No receipt available yet.');printReceiptData(lastReceipt)}
+async function reprintSale(id){const x=posOrderCache.get(id);if(!x)return alert('Sale not found.');printReceiptData(receiptFromOrder(id,x))}
+async function refundSale(id){const cached=posOrderCache.get(id);if(!cached||cached.refunded===true||cached.refundedAt||cached.status==='Refunded'||cached.status==='Cancelled')return;if(!confirm('Refund this POS sale and restore its stock?'))return;try{await runTransaction(db,async tx=>{const orderRef=doc(db,'orders',id),orderSnap=await tx.get(orderRef);if(!orderSnap.exists())throw new Error('Sale no longer exists.');const x=orderSnap.data();if(x.refunded===true||x.refundedAt||x.status==='Refunded'||x.status==='Cancelled')throw new Error('This sale has already been refunded or cancelled.');const reads=[];for(const item of (x.items||[])){if(!item.productId)throw new Error('Missing product reference for '+(item.name||'item'));const ref=doc(db,'products',item.productId);reads.push({item,ref,snap:await tx.get(ref)})}for(const r of reads){if(!r.snap.exists())throw new Error('Product '+(r.item.name||'')+' no longer exists.');const n=normalize(r.snap.data());n.stock[r.item.size]=Number(n.stock[r.item.size]||0)+Number(r.item.qty||1);const stockTotal=n.sizes.reduce((a,z)=>a+Number(n.stock[z]||0),0);tx.update(r.ref,{stock:n.stock,stockTotal,updatedAt:serverTimestamp()})}tx.update(orderRef,{status:'Refunded',refunded:true,refundAmount:Number(x.total||0),refundedAt:serverTimestamp(),refundedBy:(auth.currentUser&&auth.currentUser.email)||'Admin',updatedAt:serverTimestamp()})});alert('REFUND COMPLETE\nRefund saved permanently and stock restored once.');await Promise.all([loadPosProducts(),loadProducts(),loadOrders(),loadPosHistory(),runDailyReport()])}catch(e){alert('REFUND NOT PROCESSED\n'+e.message)}}
+let posOrderCache=new Map();
+async function runDailyReport(){const wanted=$("reportDate").value;if(!wanted)return;try{let snap=await getDocs(collection(db,'orders')),count=0,total=0,cash=0,card=0,bank=0,refunds=0;snap.forEach(d=>{const x=d.data();if(x.source!=='POS')return;const dt=x.createdAt&&x.createdAt.toDate?x.createdAt.toDate():null;if(!dt)return;const key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');if(key!==wanted)return;if(x.refunded===true||!!x.refundedAt||x.status==='Refunded'||x.status==='Cancelled'){refunds+=Number(x.total||0);return}count++;const v=Number(x.total||0);total+=v;if(x.paymentMethod==='Cash')cash+=v;else if(x.paymentMethod==='Card')card+=v;else bank+=v});$("dailyReport").innerHTML=`<div class="eodGrid"><div><b>SALES</b><br>${count}</div><div><b>NET REVENUE</b><br>${money(total)}</div><div><b>CASH</b><br>${money(cash)}</div><div><b>CARD</b><br>${money(card)}</div><div><b>BANK TRANSFER</b><br>${money(bank)}</div><div><b>REFUNDED</b><br>${money(refunds)}</div></div>`}catch(e){$("dailyReport").innerHTML='<span class="error">'+safe(e.message)+'</span>'}}
+async function completePosSale(){
+ const msg=$("posMsg"),btn=$("completeSale"),subtotal=posSubtotal(),discount=posDiscountAmount(),total=posGrandTotal(),payment=$("posPayment").value,received=Number($("posReceived").value||0);
+ if(!posCart.length){msg.innerHTML='<span class="error">Add at least one product.</span>';return}
+ if(payment==='Cash'&&received<total){msg.innerHTML='<span class="error">Cash received is less than the total.</span>';return}
+ const saleItems=posCart.map(x=>({...x})),orderRef=doc(collection(db,'orders'));
+ btn.disabled=true; msg.innerHTML='<span class="muted">Processing sale — do not close this page...</span>';
+ try{
+   // Re-read live stock immediately before committing the sale.
+   const checks=[];
+   for(const x of saleItems){
+     const ref=doc(db,'products',x.id),snap=await getDocs(query(collection(db,'products'))).then(all=>all.docs.find(d=>d.id===x.id));
+     if(!snap) throw new Error(x.name+' no longer exists.');
+     const n=normalize(snap.data()),left=Number(n.stock[x.size]||0);
+     if(left<x.qty) throw new Error('Not enough '+x.name+' '+x.size+' stock. Only '+left+' left.');
+     checks.push({x,ref,n,left});
+   }
+   // One atomic batch: order creation and every stock deduction succeed together.
+   const batch=writeBatch(db);
+   for(const c of checks){
+     c.n.stock[c.x.size]=c.left-c.x.qty;
+     const stockTotal=c.n.sizes.reduce((a,z)=>a+Number(c.n.stock[z]||0),0);
+     batch.update(c.ref,{stock:c.n.stock,stockTotal,updatedAt:serverTimestamp()});
+   }
+   batch.set(orderRef,{source:'POS',orderType:'In-store sale',status:'Delivered',cashier:(auth.currentUser&&auth.currentUser.email)||'Admin',customer:{name:$("posCustomer").value.trim()||'Walk-in Customer',phone:$("posPhone").value.trim()},items:saleItems.map(x=>({productId:x.id,sku:x.sku,name:x.name,size:x.size,qty:x.qty,price:x.price})),subtotal,discount,total,paymentMethod:payment,amountReceived:payment==='Cash'?received:total,change:payment==='Cash'?Math.max(0,received-total):0,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+   await batch.commit();
+   lastReceipt={id:orderRef.id.slice(0,10),date:new Date().toLocaleString(),cashier:(auth.currentUser&&auth.currentUser.email)||'Admin',customer:$("posCustomer").value.trim()||'Walk-in Customer',payment,items:saleItems,subtotal,discount,total,received:payment==='Cash'?received:total,change:payment==='Cash'?Math.max(0,received-total):0};posCart=[];$("posReceived").value='';$("posCustomer").value='';$("posPhone").value='';$("posDiscount").value='';renderPosCart();$("receiptActions").classList.remove("hidden");
+   await Promise.all([loadPosProducts(),loadProducts(),loadOrders()]);await loadPosHistory();
+   msg.innerHTML='<span class="ok">✓ SALE SAVED TO FIREBASE · '+safe(orderRef.id.slice(0,10))+' · '+money(total)+'</span>';
+   alert('DANVEXIS POS\n\nSALE COMPLETE\n'+money(total)+'\nOrder: '+orderRef.id.slice(0,10));
+ }catch(e){
+   console.error('POS sale failed',e);
+   msg.innerHTML='<span class="error">SALE NOT SAVED: '+safe(e.code?e.code+' — '+e.message:e.message)+'</span>';
+   alert('SALE NOT SAVED\n\n'+(e.code?e.code+' — ':'')+e.message+'\n\nNo sale should be treated as complete until this error is fixed.');
+ }finally{btn.disabled=false}
+}
+
+</script>
+</body></html>
